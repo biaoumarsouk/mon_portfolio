@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+body {
+  background-color: #020617;
+  color: #f8fafc;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar invisible mais fonctionnelle */
+::-webkit-scrollbar { width: 0px; }
