@@ -16,6 +16,14 @@ const App = () => {
 
   const IconMap = { Server, Code2, ShieldCheck };
 
+  const [scrolled, setScrolled] = React.useState(false);
+
+    React.useEffect(() => {
+      const handleScroll = () => setScrolled(window.scrollY > 50);
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
   const reveal = {
     initial: { opacity: 0, y: 80, scale: 0.98 },
     whileInView: { opacity: 1, y: 0, scale: 1 },
@@ -26,18 +34,36 @@ const App = () => {
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 selection:bg-blue-500/30 overflow-x-hidden font-sans">
       
-      {/* --- NAVBAR --- */}
-      <nav className="fixed top-0 w-full z-50 bg-slate-950/90 backdrop-blur-xl border-b border-white/5 h-20 flex items-center">
-        <div className="max-w-6xl mx-auto w-full px-8 flex justify-between items-center">
-          <span className="text-xl font-black tracking-tighter uppercase italic text-white">
+      {/* --- NAVBAR ADAPTATIVE --- */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 border-b ${
+        scrolled 
+        ? 'h-16 bg-slate-950/95 backdrop-blur-xl border-white/10 shadow-2xl' 
+        : 'h-24 bg-transparent border-transparent'
+      }`}>
+        <div className="max-w-6xl mx-auto w-full h-full px-6 md:px-8 flex justify-between items-center">
+          
+          {/* LOGO : Taille adaptable */}
+          <span className={`font-black tracking-tighter uppercase italic text-white transition-all duration-500 ${
+            scrolled ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'
+          }`}>
             Portfolio <span className="text-blue-500">.</span>
           </span>
-          <div className="flex items-center gap-8 font-black uppercase text-[10px] tracking-widest">
+
+          {/* ACTIONS : Flexbox intelligente */}
+          <div className="flex items-center gap-3 md:gap-8 font-black uppercase tracking-widest">
+
+            {/* Bouton Contact : Texte réduit sur mobile pour gagner de la place */}
             <button 
               onClick={() => setIsContactOpen(true)} 
-              className="bg-blue-600 text-white px-8 py-3 rounded-xl hover:bg-blue-500 transition-all font-black uppercase tracking-widest text-sm md:text-lg shadow-lg shadow-blue-600/20 cursor-pointer"
+              className={`bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-all font-black uppercase tracking-widest shadow-lg shadow-blue-600/20 cursor-pointer flex items-center gap-2 ${
+                scrolled 
+                ? 'px-4 py-2 text-[10px] md:text-sm' 
+                : 'px-6 py-3 md:px-8 md:py-3 text-[10px] md:text-lg'
+              }`}
             >
-              Contactez-moi
+              <Mail size={16} className="md:hidden" />
+              <span className="hidden sm:inline">Contactez-moi</span>
+              <span className="sm:hidden font-bold">Contact</span>
             </button>
           </div>
         </div>
