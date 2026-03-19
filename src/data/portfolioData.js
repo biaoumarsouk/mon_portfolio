@@ -44,7 +44,9 @@ export const portfolioData = {
       poste: "Stage Académique - Soutenance",
       periode: "Avril 2025 – Août 2025",
       details: "Réalisation du projet : 'Conception et déploiement d’un système automatisé de sauvegarde et de restauration des configurations réseau'. Mention Très Bien. Redimensionnement et configuration d'équipements Cisco et pare-feu.",
-      tags: ["Cisco", "Sécurité", "Réseau"]
+      tags: ["Cisco", "Sécurité", "Réseau"],
+       photo: "photo-ust.jpg",
+      document: "/nom-du-fichier.pdf"
     },
     {
       id: 2,
@@ -52,7 +54,8 @@ export const portfolioData = {
       poste: "Stage Académique - Développeur",
       periode: "Juin 2024 – Septembre 2024",
       details: "Contribution au développement du site web (React.js) et de l'application mobile (React Native). Utilisation de Figma pour le prototypage et le design d’applications.",
-      tags: ["React", "React Native", "Figma"]
+      tags: ["React", "React Native", "Figma"],
+      document: "/nom-du-fichier.pdf"
     },
     {
       id: 3,
@@ -60,26 +63,43 @@ export const portfolioData = {
       poste: "Stage Académique - Développeur Web",
       periode: "Avril 2024 – Juin 2024",
       details: "Réalisation en équipe de la refonte du site de l’ONG ADNA. Utilisation du framework Laravel, travail collaboratif et mutualisation des efforts.",
-      tags: ["Laravel", "PHP", "Agile"]
+      tags: ["Laravel", "PHP", "Agile"],
+      photo: "/photo-maelan.jpg",
+      document: "/nom-du-fichier.pdf"
     }
   ],
 
   formations: [
     {
+      id: "licence", // On ajoute un ID pour le reconnaître
       diplome: "Licence Professionnelle en Informatique de Gestion",
       option: "Administration des Réseaux Informatiques",
       etablissement: "ENEAM, Cotonou, Bénin",
-      periode: "2022 - 2025"
+      periode: "2022 - 2025",
+      // AJOUTE CECI :
+      photo: "/photo-diplome-Licence.jpg", // Mets ta photo dans le dossier public/
+      document: "/nom-du-fichier.pdf",
+      details: "Ma formation à l'ENEAM m'a permis d'acquérir une expertise solide en administration système et réseau. Ma soutenance portait sur l'automatisation des sauvegardes réseau (Mention Très Bien). J'y ai appris la gestion des infrastructures Cisco, la sécurité informatique et le déploiement de serveurs Linux/Windows."
     },
     {
       diplome: "Baccalauréat, série D",
       option: "Enseignement Général",
       etablissement: "Les Petites Âmes, Cotonou, Bénin",
-      periode: "2021 - 2022"
+      periode: "2021 - 2022",
+      document: "/nom-du-fichier.pdf"
+      // Pas de détails pour le BAC, donc pas de bouton "Détails"
     }
   ],
 
   atouts: ["Créatif et innovant", "Solutionneur de problèmes", "Apprentissage rapide", "Esprit d'équipe"],
+
+  contact: {
+    email: "ton-email@exemple.com",
+    telephone: "+229 XX XX XX XX",
+    localisation: "Cotonou, Bénin",
+    linkedin: "https://linkedin.com/in/marsouk",
+    github: "https://github.com/marsouk"
+  },
   
   langues: [
     { nom: "Français", niveau: "Courant" },
