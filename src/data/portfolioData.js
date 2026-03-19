@@ -2,7 +2,7 @@ import { Server, Code2, ShieldCheck, GraduationCap, Briefcase, Zap, Globe, Award
 
 export const portfolioData = {
   profil: {
-    prenom: "MARSOUK",
+    prenom: "Marsouk",
     nom: "BIAOU",
     titre: "Administrateur Réseaux & Développeur Fullstack",
     description: "Titulaire d’une Licence en Informatique de Gestion. Passionné par la conception, l’administration et la sécurisation des systèmes d’information.",
@@ -10,7 +10,7 @@ export const portfolioData = {
   },
 
   aPropos: {
-    nomComplet: "MARSOUK [METS TON NOM ICI]", 
+    nomComplet: "BIAOU Malomon Abdou Marsouk", 
     naissance: "19 Février 2005", // À modifier
     lieu: "Ekpè, Bénin",
     nationalite: "Béninoise",
