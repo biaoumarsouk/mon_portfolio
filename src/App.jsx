@@ -31,7 +31,6 @@ const App = () => {
             Portfolio <span className="text-blue-500">.</span>
           </span>
           <div className="flex items-center gap-8 font-black uppercase text-[10px] tracking-widest">
-            <button onClick={() => setIsAboutOpen(true)} className="hover:text-blue-500 transition cursor-pointer">Qui suis-je ?</button>
             <button onClick={() => setIsContactOpen(true)} className="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-500 transition-all">Contact</button>
           </div>
         </div>
