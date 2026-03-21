@@ -33,7 +33,6 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-300 selection:bg-blue-500/30 overflow-x-hidden font-sans">
-      
       {/* --- NAVBAR ADAPTATIVE --- */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-500 border-b ${
         scrolled 
