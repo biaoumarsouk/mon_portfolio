@@ -4,7 +4,7 @@ import {
   Github, Linkedin, Mail, X, Download, PlusCircle, 
   Server, Code2, ShieldCheck, GraduationCap, Briefcase, 
   User, MapPin, Calendar, Fingerprint, Info, Zap, 
-  CheckCircle2, Award, FileText,ArrowRight
+  CheckCircle2, Award, FileText, ArrowRight
 } from 'lucide-react';
 import { portfolioData } from './data/portfolioData';
 
@@ -18,11 +18,11 @@ const App = () => {
 
   const [scrolled, setScrolled] = React.useState(false);
 
-    React.useEffect(() => {
-      const handleScroll = () => setScrolled(window.scrollY > 50);
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+  React.useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const reveal = {
     initial: { opacity: 0, y: 80, scale: 0.98 },
@@ -32,7 +32,7 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-300 selection:bg-blue-500/30 overflow-x-hidden font-sans">
+    <div className="min-h-screen bg-[#020617] text-slate-300 selection:bg-blue-500/30 overflow-x-hidden font-sans italic">
       {/* --- NAVBAR ADAPTATIVE --- */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-500 border-b ${
         scrolled 
@@ -50,8 +50,7 @@ const App = () => {
 
           {/* ACTIONS : Flexbox intelligente */}
           <div className="flex items-center gap-3 md:gap-8 font-black uppercase tracking-widest">
-
-            {/* Bouton Contact : Texte réduit sur mobile pour gagner de la place */}
+            {/* Bouton Contact */}
             <button 
               onClick={() => setIsContactOpen(true)} 
               className={`bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-all font-black uppercase tracking-widest shadow-lg shadow-blue-600/20 cursor-pointer flex items-center gap-2 ${
@@ -68,10 +67,10 @@ const App = () => {
         </div>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-8">
+      <main className="max-w-6xl mx-auto px-6 md:px-8">
         
         {/* --- SECTION: PROFIL --- */}
-        <section className="pt-56 pb-32 border-b border-white/5">
+        <section className="pt-40 md:pt-56 pb-16 md:pb-32 border-b border-white/5">
           <motion.div {...reveal}>
             <h1 className="text-6xl md:text-8xl font-black text-white mb-8 italic capitalize leading-tight">
               {portfolioData.profil.prenom} <br />
@@ -96,8 +95,8 @@ const App = () => {
         </section>
 
         {/* --- SECTION 01: COMPÉTENCES --- */}
-        <section className="py-32 border-b border-white/5">
-          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-20 italic">01. Compétences</motion.h2>
+        <section className="py-16 md:py-32 border-b border-white/5">
+          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">01. Compétences</motion.h2>
           <div className="grid md:grid-cols-3 gap-12">
             {portfolioData.competences.map((skill, i) => {
               const Icon = IconMap[skill.icon];
@@ -121,8 +120,8 @@ const App = () => {
         </section>
 
         {/* --- SECTION 02: EXPÉRIENCES PROFESSIONNELLES --- */}
-        <section className="py-32 border-b border-white/5">
-          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-20 italic">02. Expériences Pro</motion.h2>
+        <section className="py-16 md:py-32 border-b border-white/5">
+          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">02. Expériences Pro</motion.h2>
           <div className="space-y-6">
             {portfolioData.experiences.map((exp, i) => (
               <motion.div 
@@ -146,8 +145,8 @@ const App = () => {
         </section>
 
         {/* --- SECTION 03: DIPLÔMES ET FORMATIONS --- */}
-        <section className="py-32 border-b border-white/5">
-          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-20 italic">
+        <section className="py-16 md:py-32 border-b border-white/5">
+          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">
             03. Formations
           </motion.h2>
 
@@ -178,7 +177,6 @@ const App = () => {
                      <MapPin size={14} className="text-blue-500" /> {f.etablissement}
                   </p>
                   
-                  {/* LOGIQUE CONDITIONNELLE POUR LE BOUTON */}
                   {f.details ? (
                     <button 
                       onClick={() => setSelectedFormation(f)}
@@ -204,8 +202,8 @@ const App = () => {
         </section>
 
         {/* --- SECTION 04: LANGUES --- */}
-        <section className="py-32 border-b border-white/5">
-          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-20 italic">04. Langues</motion.h2>
+        <section className="py-16 md:py-32 border-b border-white/5">
+          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">04. Langues</motion.h2>
           <div className="grid md:grid-cols-2 gap-12">
             {portfolioData.langues.map(l => (
               <div key={l.nom} className="flex justify-between items-end border-b-4 border-white/5 pb-6">
@@ -217,8 +215,8 @@ const App = () => {
         </section>
 
         {/* --- SECTION 05: ATOUTS --- */}
-        <section className="py-32 mb-40">
-          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-20 italic">05. Atouts</motion.h2>
+        <section className="py-16 md:py-32 mb-20 md:mb-40">
+          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">05. Atouts</motion.h2>
           <div className="flex flex-wrap gap-6">
             {portfolioData.atouts.map(a => (
               <span key={a} className="bg-white/5 px-10 py-6 rounded-[30px] text-2xl font-black text-slate-300 border border-white/10 hover:border-blue-500 transition-all uppercase tracking-tighter italic shadow-md">
@@ -231,7 +229,7 @@ const App = () => {
       </main>
 
       {/* --- FOOTER --- */}
-      <footer className="py-32 text-center border-t border-white/5 bg-slate-950/20 font-bold uppercase text-[10px] tracking-widest italic">
+      <footer className="py-20 md:py-32 text-center border-t border-white/5 bg-slate-950/20 font-bold uppercase text-[10px] tracking-widest italic">
         <div className="max-w-4xl mx-auto px-8">
           <motion.div {...reveal}>
             <h2 className="text-3xl md:text-6xl font-black text-white italic tracking-tighter mb-8 leading-tight uppercase">
@@ -287,7 +285,7 @@ const App = () => {
           </div>
         )}
 
-        {/* MODAL CONTACT "FULL ADAPTATIVE" */}
+        {/* MODAL CONTACT */}
         {isContactOpen && (
           <div className="fixed inset-0 z-[200] flex justify-center items-start md:items-center p-4 sm:p-6 bg-slate-950/98 backdrop-blur-3xl overflow-y-auto">
              <motion.div 
@@ -296,10 +294,8 @@ const App = () => {
                 exit={{ scale: 0.9, opacity: 0, y: 40 }} 
                 className="bg-slate-900 border border-white/10 rounded-[40px] md:rounded-[60px] w-full max-w-6xl relative flex flex-col md:flex-row my-auto shadow-2xl overflow-hidden"
              >
-                {/* --- COLONNE GAUCHE : INFOS (S'affiche en haut sur mobile) --- */}
                 <div className="md:w-2/5 bg-blue-600 p-8 md:p-16 text-white relative overflow-hidden flex flex-col justify-between min-h-[300px] md:min-h-full">
                   <Zap size={300} className="absolute -bottom-20 -left-20 text-white/10 rotate-12 pointer-events-none" />
-                  
                   <div className="relative z-10">
                     <h2 className="text-3xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 leading-none">
                       Parlons <br className="hidden md:block" /> de votre <br /> <span className="underline decoration-white/20 underline-offset-8">Projet.</span>
@@ -308,105 +304,54 @@ const App = () => {
                       Expertise en Réseau, Sécurité et Développement Web.
                     </p>
                   </div>
-
                   <div className="space-y-6 relative z-10 font-bold uppercase text-[9px] md:text-[10px] tracking-[0.2em]">
                     <div className="flex items-center gap-4 group">
-                      <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white group-hover:text-blue-600 transition-all duration-500">
-                        <Mail size={20} />
-                      </div>
-                      <div>
-                        <p className="opacity-50">Email</p>
-                        <p className="text-sm font-black lowercase tracking-normal italic">{portfolioData.contact.email}</p>
-                      </div>
+                      <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white group-hover:text-blue-600 transition-all duration-500"><Mail size={20} /></div>
+                      <div><p className="opacity-50">Email</p><p className="text-sm font-black lowercase tracking-normal italic">{portfolioData.contact.email}</p></div>
                     </div>
-
                     <div className="flex items-center gap-4 group">
-                      <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white group-hover:text-blue-600 transition-all duration-500">
-                        <MapPin size={20} />
-                      </div>
-                      <div>
-                        <p className="opacity-50 font-bold uppercase text-[10px] tracking-widest italic font-bold">Localisation</p>
-                        <p className="text-sm font-black italic">{portfolioData.contact.localisation}</p>
-                      </div>
+                      <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white group-hover:text-blue-600 transition-all duration-500"><MapPin size={20} /></div>
+                      <div><p className="opacity-50 font-bold uppercase text-[10px] tracking-widest italic font-bold">Localisation</p><p className="text-sm font-black italic">{portfolioData.contact.localisation}</p></div>
                     </div>
                   </div>
                 </div>
-
-                {/* --- COLONNE DROITE : FORMULAIRE --- */}
                 <div className="md:w-3/5 p-8 md:p-20 relative bg-slate-900 flex flex-col justify-center">
-                  {/* Bouton Fermer (Plus gros et plus visible sur mobile) */}
-                  <button 
-                    onClick={() => setIsContactOpen(false)} 
-                    className="absolute top-4 right-4 md:top-8 md:right-8 text-slate-500 hover:text-white transition cursor-pointer p-3 bg-white/5 rounded-full z-20"
-                  >
-                    <X size={28} />
-                  </button>
-                  
+                  <button onClick={() => setIsContactOpen(false)} className="absolute top-4 right-4 md:top-8 md:right-8 text-slate-500 hover:text-white transition cursor-pointer p-3 bg-white/5 rounded-full z-20"><X size={28} /></button>
                   <form className="space-y-6 md:space-y-8 italic font-bold mt-4 md:mt-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Nom complet</label>
-                        <input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="Marsouk ..." />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Votre Email</label>
-                        <input type="email" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="email@domaine.com" />
-                      </div>
+                      <div className="space-y-2"><label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Nom complet</label><input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="Marsouk ..." /></div>
+                      <div className="space-y-2"><label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Votre Email</label><input type="email" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="email@domaine.com" /></div>
                     </div>
-
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Sujet</label>
-                      <input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="Audit / Développement..." />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Votre Message</label>
-                      <textarea rows="4" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner resize-none" placeholder="Dites-moi tout..."></textarea>
-                    </div>
-
-                    <motion.button 
-                      whileTap={{ scale: 0.95 }}
-                      className="w-full bg-blue-600 py-5 md:py-6 rounded-3xl font-black text-white uppercase tracking-[0.3em] text-[11px] md:text-xs hover:bg-blue-500 transition-all shadow-2xl shadow-blue-600/30 flex items-center justify-center gap-4 group"
-                    >
-                      Envoyer la demande <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                    </motion.button>
+                    <div className="space-y-2"><label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Sujet</label><input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="Audit / Développement..." /></div>
+                    <div className="space-y-2"><label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Votre Message</label><textarea rows="4" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner resize-none" placeholder="Dites-moi tout..."></textarea></div>
+                    <motion.button whileTap={{ scale: 0.95 }} className="w-full bg-blue-600 py-5 md:py-6 rounded-3xl font-black text-white uppercase tracking-[0.3em] text-[11px] md:text-xs hover:bg-blue-500 transition-all shadow-2xl shadow-blue-600/30 flex items-center justify-center gap-4 group">Envoyer la demande <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" /></motion.button>
                   </form>
                 </div>
              </motion.div>
           </div>
         )}
+
         {/* MODAL EXPÉRIENCE AVEC PHOTO (SPLIT VIEW) */}
         {selectedExp && (
           <div className="fixed inset-0 z-[200] flex justify-center items-start md:items-center p-4 bg-black/95 backdrop-blur-xl overflow-y-auto">
-            <motion.div 
-              initial={{ y: 100, opacity: 0 }} 
-              animate={{ y: 0, opacity: 1 }} 
-              exit={{ y: 100, opacity: 0 }} 
-              className={`bg-slate-900 border border-white/10 rounded-[40px] md:rounded-[50px] w-full ${selectedExp.photo ? 'max-w-6xl flex flex-col md:flex-row' : 'max-w-3xl p-10 md:p-16'} relative shadow-2xl my-8 overflow-hidden`}
-            >
+            <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} className={`bg-slate-900 border border-white/10 rounded-[40px] md:rounded-[50px] w-full ${selectedExp.photo ? 'max-w-6xl flex flex-col md:flex-row' : 'max-w-3xl p-10 md:p-16'} relative shadow-2xl my-8 overflow-hidden`} >
               <button onClick={() => setSelectedExp(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white transition z-50 p-2 bg-black/20 rounded-full"><X size={32} /></button>
-              
-              {/* Si une photo existe, on l'affiche à gauche */}
               {selectedExp.photo && (
                 <div className="md:w-1/2 h-[400px] md:h-auto bg-slate-800 relative">
                   <img src={selectedExp.photo} alt={selectedExp.entreprise} className="w-full h-full object-cover object-center" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent md:hidden" />
                 </div>
               )}
-
-              {/* Contenu textuel */}
               <div className={`${selectedExp.photo ? 'md:w-1/2 p-8 md:p-16' : ''}`}>
                 <span className="text-blue-500 font-black text-sm uppercase tracking-widest">{selectedExp.periode}</span>
                 <h3 className="text-4xl md:text-6xl font-black mb-4 tracking-tighter italic uppercase mt-4 leading-none text-white">{selectedExp.entreprise}</h3>
                 <p className="text-blue-400 font-black text-xl mb-10 italic border-l-4 border-blue-500 pl-6 uppercase">{selectedExp.poste}</p>
                 <p className="text-slate-300 leading-relaxed text-xl md:text-2xl font-light mb-12 italic opacity-80 underline decoration-slate-800 underline-offset-8">{selectedExp.details}</p>
-                
                 {selectedExp.document && (
                   <a href={selectedExp.document} download className="inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all mb-8 shadow-xl">
                     <FileText size={18} /> Télécharger l'attestation
                   </a>
                 )}
-
                 <div className="flex flex-wrap gap-3 pt-6 border-t border-white/5 font-bold">
                   {selectedExp.tags.map(t => <span key={t} className="bg-white/5 px-6 py-2 rounded-xl text-xs font-black text-blue-400 border border-white/10 uppercase">{t}</span>)}
                 </div>
@@ -417,8 +362,8 @@ const App = () => {
 
         {/* MODAL DÉTAILS DIPLÔME */}
         {selectedFormation && (
-          <div className="fixed inset-0 z-[200] flex justify-center items-start md:items-center p-4 bg-black/95 backdrop-blur-xl overflow-y-auto">
-            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="bg-slate-900 border border-white/10 rounded-[40px] md:rounded-[50px] w-full max-w-5xl relative flex flex-col md:flex-row overflow-hidden my-8 shadow-2xl">
+          <div className="fixed inset-0 z-[200] flex justify-center items-start md:items-center p-4 bg-black/95 backdrop-blur-xl overflow-y-auto italic font-bold">
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="bg-slate-900 border border-white/10 rounded-[40px] md:rounded-[50px] w-full max-w-5xl relative flex flex-col md:flex-row overflow-hidden my-8 shadow-2xl italic font-bold">
               <div className="md:w-1/2 h-[400px] md:h-auto bg-slate-800 relative italic font-bold">
                 <img src={selectedFormation.photo} alt="Diplôme" className="w-full h-full object-cover object-center italic font-bold" />
               </div>
@@ -427,9 +372,8 @@ const App = () => {
                 <h2 className="text-3xl font-black text-white italic uppercase mb-4 tracking-widest italic font-bold">Succès Académique</h2>
                 <div className="mb-8"><p className="text-[10px] uppercase font-black text-blue-500 tracking-[0.3em] mb-2 italic tracking-widest italic font-bold font-bold">Diplôme obtenu</p><h3 className="text-2xl font-black text-white uppercase italic tracking-tighter leading-tight tracking-widest italic font-bold font-bold">{selectedFormation.diplome}</h3></div>
                 <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 mb-8"><p className="text-slate-400 leading-relaxed italic text-lg tracking-widest italic font-bold font-bold">{selectedFormation.details}</p></div>
-                
                 {selectedFormation.document && (
-                  <a href={selectedFormation.document} download className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 transition-all mb-8 w-fit shadow-xl">
+                  <a href={selectedFormation.document} download className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 transition-all mb-8 w-fit shadow-xl italic font-bold font-bold">
                     <Download size={18} /> Télécharger le diplôme (PDF)
                   </a>
                 )}
