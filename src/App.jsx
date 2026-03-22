@@ -59,9 +59,8 @@ const App = () => {
                 : 'px-6 py-3 md:px-8 md:py-3 text-[10px] md:text-lg'
               }`}
             >
-              <Mail size={16} className="md:hidden" />
               <span className="hidden sm:inline">Contactez-moi</span>
-              <span className="sm:hidden font-bold">Contact</span>
+              <span className="sm:hidden font-bold">Contactez-moi</span>
             </button>
           </div>
         </div>
