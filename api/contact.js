@@ -1,4 +1,4 @@
-const Mailjet = require('node-mailjet');
+import Mailjet from 'node-mailjet';
 
 export default async function handler(req, res) {
   // 1. Autoriser uniquement le POST
@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Seul le POST est autorisé' });
   }
 
-  // 2. Vérifier les clés API
+  // 2. Récupérer les clés API depuis Vercel
   const apiKey = process.env.MAILJET_API_KEY;
   const apiSecret = process.env.MAILJET_SECRET_KEY;
 
@@ -24,20 +24,23 @@ export default async function handler(req, res) {
       Messages: [
         {
           From: {
-            Email: "biaoumarsouk@gmail.com", // <--- VERIFIE BIEN CELUI-CI
+            Email: "biaoumarsouk@gmail.com", // <--- METS TON EMAIL VALIDE ICI
             Name: "Portfolio Contact"
           },
           To: [
             {
-              Email: "biaoumarsouk@gmail.com", // <--- TON EMAIL PERSO
+              Email: "biaoumarsouk@gmail.com", // <--- METS TON EMAIL DE RECEPTION ICI
               Name: "Marsouk"
             }
           ],
-          Subject: `Message Portfolio: ${subject}`,
+          Subject: `Message Portfolio de ${name} : ${subject}`,
           HTMLPart: `
-            <h3>Nouveau message de ${name}</h3>
-            <p><strong>Email du client:</strong> ${email}</p>
-            <p><strong>Message:</strong></p>
+            <h3>Nouveau message reçu</h3>
+            <p><strong>Nom :</strong> ${name}</p>
+            <p><strong>Email :</strong> ${email}</p>
+            <p><strong>Sujet :</strong> ${subject}</p>
+            <br/>
+            <p><strong>Message :</strong></p>
             <p>${message}</p>
           `
         }
@@ -46,11 +49,10 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ success: true });
   } catch (error) {
-    // On renvoie l'erreur précise de Mailjet pour comprendre le blocage
-    return res.status(error.statusCode || 500).json({ 
+    console.error("Erreur détaillée:", error);
+    return res.status(500).json({ 
       success: false, 
-      error: error.message,
-      details: error.response ? error.response.body : "Pas de détails" 
+      error: error.message 
     });
   }
 }
