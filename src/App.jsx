@@ -18,6 +18,34 @@ const App = () => {
 
   const [scrolled, setScrolled] = React.useState(false);
 
+  // 1. Ajoute ces états en haut de ton composant App
+  const [status, setStatus] = useState(null); // 'loading', 'success', 'error'
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+
+  // 2. Ajoute la fonction de soumission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setIsContactOpen(false), 2000); // Ferme après 2s
+      } else {
+        setStatus('error');
+      }
+    } catch (err) {
+      setStatus('error');
+    }
+  };
+
   React.useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
@@ -316,14 +344,60 @@ const App = () => {
                 </div>
                 <div className="md:w-3/5 p-8 md:p-20 relative bg-slate-900 flex flex-col justify-center">
                   <button onClick={() => setIsContactOpen(false)} className="absolute top-4 right-4 md:top-8 md:right-8 text-slate-500 hover:text-white transition cursor-pointer p-3 bg-white/5 rounded-full z-20"><X size={28} /></button>
-                  <form className="space-y-6 md:space-y-8 italic font-bold mt-4 md:mt-0">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2"><label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Nom complet</label><input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="Marsouk ..." /></div>
-                      <div className="space-y-2"><label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Votre Email</label><input type="email" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="email@domaine.com" /></div>
+                  <form onSubmit={handleSubmit} className="space-y-6 font-bold mt-4 md:mt-0 italic">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                      <div className="space-y-1">
+                        <label className="text-[9px] md:text-[10px] uppercase font-black text-blue-500 tracking-widest italic">Nom complet</label>
+                        <input 
+                          required
+                          value={formData.name}
+                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-600 text-white transition-all text-sm" placeholder="Marsouk ..." 
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] md:text-[10px] uppercase font-black text-blue-500 tracking-widest italic">Votre Email</label>
+                        <input 
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-600 text-white transition-all text-sm" placeholder="email@domaine.com" 
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2"><label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Sujet</label><input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="Audit / Développement..." /></div>
-                    <div className="space-y-2"><label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Votre Message</label><textarea rows="4" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner resize-none" placeholder="Dites-moi tout..."></textarea></div>
-                    <motion.button whileTap={{ scale: 0.95 }} className="w-full bg-blue-600 py-5 md:py-6 rounded-3xl font-black text-white uppercase tracking-[0.3em] text-[11px] md:text-xs hover:bg-blue-500 transition-all shadow-2xl shadow-blue-600/30 flex items-center justify-center gap-4 group">Envoyer la demande <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" /></motion.button>
+                    
+                    <div className="space-y-1">
+                      <label className="text-[9px] md:text-[10px] uppercase font-black text-blue-500 tracking-widest italic">Sujet</label>
+                      <input 
+                        required
+                        value={formData.subject}
+                        onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                        type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-600 text-white transition-all text-sm" placeholder="Audit / Développement..." 
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[9px] md:text-[10px] uppercase font-black text-blue-500 tracking-widest italic">Message</label>
+                      <textarea 
+                        required
+                        value={formData.message}
+                        onChange={(e) => setFormData({...formData, message: e.target.value})}
+                        rows="3" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-600 text-white transition-all resize-none text-sm" placeholder="Dites-moi tout..."
+                      ></textarea>
+                    </div>
+
+                    <motion.button 
+                      disabled={status === 'loading'}
+                      whileTap={{ scale: 0.95 }} 
+                      className="w-full bg-blue-600 py-4 md:py-5 rounded-2xl font-black text-white uppercase tracking-[0.2em] text-[10px] md:text-xs hover:bg-blue-500 transition-all shadow-2xl flex items-center justify-center gap-4 group"
+                    >
+                      {status === 'loading' ? 'Envoi en cours...' : 'Envoyer la demande'} 
+                      <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                    </motion.button>
+
+                    {/* Messages d'état */}
+                    {status === 'success' && <p className="text-green-500 text-center text-xs mt-2 font-bold">Message envoyé avec succès ! 🚀</p>}
+                    {status === 'error' && <p className="text-red-500 text-center text-xs mt-2 font-bold">Erreur lors de l'envoi. Réessayez.</p>}
                   </form>
                 </div>
              </motion.div>
