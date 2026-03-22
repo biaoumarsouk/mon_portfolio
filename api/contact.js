@@ -1,45 +1,43 @@
 import Mailjet from 'node-mailjet';
 
 export default async function handler(req, res) {
-  // 1. Autoriser uniquement le POST
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Seul le POST est autorisé' });
+    return res.status(405).json({ message: 'Méthode non autorisée' });
   }
-
-  // 2. Récupérer les clés API depuis Vercel
-  const apiKey = process.env.MAILJET_API_KEY;
-  const apiSecret = process.env.MAILJET_SECRET_KEY;
-
-  if (!apiKey || !apiSecret) {
-    return res.status(500).json({ error: "Clés API manquantes sur Vercel" });
-  }
-
-  // 3. Initialisation de Mailjet
-  const mailjet = Mailjet.apiConnect(apiKey, apiSecret);
 
   const { name, email, subject, message } = req.body;
 
+  // VERIFICATION DES CLES
+  if (!process.env.MAILJET_API_KEY || !process.env.MAILJET_SECRET_KEY) {
+    console.error("ERREUR: Clés API manquantes");
+    return res.status(500).json({ success: false, error: "Clés API manquantes sur Vercel" });
+  }
+
+  // NOUVELLE SYNTAXE (v6+)
+  const mailjet = new Mailjet({
+    apiKey: process.env.MAILJET_API_KEY,
+    apiSecret: process.env.MAILJET_SECRET_KEY
+  });
+
   try {
-    await mailjet.post('send', { version: 'v3.1' }).request({
+    const result = await mailjet.post('send', { version: 'v3.1' }).request({
       Messages: [
         {
           From: {
-            Email: "biaoumarsouk@gmail.com", // <--- METS TON EMAIL VALIDE ICI
-            Name: "Portfolio Contact"
+            Email: "TON_EMAIL_VÉRIFIÉ_SUR_MAILJET@gmail.com", // <--- METS TON MAIL ICI
+            Name: "Contact Portfolio"
           },
           To: [
             {
-              Email: "biaoumarsouk@gmail.com", // <--- METS TON EMAIL DE RECEPTION ICI
+              Email: "TON_EMAIL_DE_RÉCEPTION@gmail.com", // <--- METS TON MAIL ICI
               Name: "Marsouk"
             }
           ],
-          Subject: `Message Portfolio de ${name} : ${subject}`,
+          Subject: `Message de ${name} : ${subject}`,
           HTMLPart: `
-            <h3>Nouveau message reçu</h3>
-            <p><strong>Nom :</strong> ${name}</p>
-            <p><strong>Email :</strong> ${email}</p>
+            <h3>Nouveau message de contact</h3>
+            <p><strong>Expéditeur :</strong> ${name} (${email})</p>
             <p><strong>Sujet :</strong> ${subject}</p>
-            <br/>
             <p><strong>Message :</strong></p>
             <p>${message}</p>
           `
@@ -47,12 +45,14 @@ export default async function handler(req, res) {
       ]
     });
 
+    console.log("Mail envoyé avec succès");
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error("Erreur détaillée:", error);
+    console.error("Erreur Mailjet précise:", error.statusCode, error.message);
     return res.status(500).json({ 
       success: false, 
-      error: error.message 
+      error: error.message,
+      statusCode: error.statusCode 
     });
   }
 }
