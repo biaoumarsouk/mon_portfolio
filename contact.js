@@ -23,7 +23,7 @@ export default async function handler(req, res) {
           },
           To: [
             {
-              Email: "ton-email-de-reception@gmail.com", // Où tu reçois le message
+              Email: "biaoumarsouk@gmail.com", // Où tu reçois le message
               Name: "Marsouk"
             }
           ],
