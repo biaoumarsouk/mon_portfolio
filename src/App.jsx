@@ -312,17 +312,19 @@ const App = () => {
           </div>
         )}
 
-        {/* MODAL CONTACT */}
+        {/* MODAL CONTACT CORRIGÉ */}
         {isContactOpen && (
-          <div className="fixed inset-0 z-[200] flex justify-center items-start md:items-center p-4 sm:p-6 bg-slate-950/98 backdrop-blur-3xl overflow-y-auto">
+          <div className="fixed inset-0 z-[200] flex justify-center items-start md:items-center p-4 sm:p-6 bg-slate-950/98 backdrop-blur-3xl overflow-y-auto font-sans italic font-bold">
              <motion.div 
                 initial={{ scale: 0.9, opacity: 0, y: 40 }} 
                 animate={{ scale: 1, opacity: 1, y: 0 }} 
                 exit={{ scale: 0.9, opacity: 0, y: 40 }} 
                 className="bg-slate-900 border border-white/10 rounded-[40px] md:rounded-[60px] w-full max-w-6xl relative flex flex-col md:flex-row my-auto shadow-2xl overflow-hidden"
              >
+                {/* --- COLONNE GAUCHE : INFOS --- */}
                 <div className="md:w-2/5 bg-blue-600 p-8 md:p-16 text-white relative overflow-hidden flex flex-col justify-between min-h-[300px] md:min-h-full">
                   <Zap size={300} className="absolute -bottom-20 -left-20 text-white/10 rotate-12 pointer-events-none" />
+                  
                   <div className="relative z-10">
                     <h2 className="text-3xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 leading-none">
                       Parlons <br className="hidden md:block" /> de votre <br /> <span className="underline decoration-white/20 underline-offset-8">Projet.</span>
@@ -331,73 +333,84 @@ const App = () => {
                       Expertise en Réseau, Sécurité et Développement Web.
                     </p>
                   </div>
+
                   <div className="space-y-6 relative z-10 font-bold uppercase text-[9px] md:text-[10px] tracking-[0.2em]">
-                    <div className="flex items-center gap-4 group">
+                    <div className="flex items-center gap-4 group cursor-pointer">
                       <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white group-hover:text-blue-600 transition-all duration-500"><Mail size={20} /></div>
                       <div><p className="opacity-50">Email</p><p className="text-sm font-black lowercase tracking-normal italic">{portfolioData.contact.email}</p></div>
                     </div>
-                    <div className="flex items-center gap-4 group">
+                    <div className="flex items-center gap-4 group cursor-pointer">
                       <div className="p-3 bg-white/10 rounded-xl group-hover:bg-white group-hover:text-blue-600 transition-all duration-500"><MapPin size={20} /></div>
                       <div><p className="opacity-50 font-bold uppercase text-[10px] tracking-widest italic font-bold">Localisation</p><p className="text-sm font-black italic">{portfolioData.contact.localisation}</p></div>
                     </div>
                   </div>
                 </div>
+
+                {/* --- COLONNE DROITE : FORMULAIRE --- */}
                 <div className="md:w-3/5 p-8 md:p-20 relative bg-slate-900 flex flex-col justify-center">
-                  <button onClick={() => setIsContactOpen(false)} className="absolute top-4 right-4 md:top-8 md:right-8 text-slate-500 hover:text-white transition cursor-pointer p-3 bg-white/5 rounded-full z-20"><X size={28} /></button>
-                  <form onSubmit={handleSubmit} className="space-y-6 font-bold mt-4 md:mt-0 italic">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                      <div className="space-y-1">
-                        <label className="text-[9px] md:text-[10px] uppercase font-black text-blue-500 tracking-widest italic">Nom complet</label>
+                  <button 
+                    onClick={() => setIsContactOpen(false)} 
+                    className="absolute top-4 right-4 md:top-8 md:right-8 text-slate-500 hover:text-white transition cursor-pointer p-3 bg-white/5 rounded-full z-20"
+                  >
+                    <X size={28} />
+                  </button>
+                  
+                  {/* handleSubmit ajouté ici pour l'envoi de mail */}
+                  <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8 italic font-bold mt-4 md:mt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Nom complet</label>
                         <input 
                           required
                           value={formData.name}
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
-                          type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-600 text-white transition-all text-sm" placeholder="Marsouk ..." 
+                          type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="Marsouk ..." 
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] md:text-[10px] uppercase font-black text-blue-500 tracking-widest italic">Votre Email</label>
+                      <div className="space-y-2">
+                        <label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Votre Email</label>
                         <input 
                           required
                           value={formData.email}
                           onChange={(e) => setFormData({...formData, email: e.target.value})}
-                          type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-600 text-white transition-all text-sm" placeholder="email@domaine.com" 
+                          type="email" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="email@domaine.com" 
                         />
                       </div>
                     </div>
-                    
-                    <div className="space-y-1">
-                      <label className="text-[9px] md:text-[10px] uppercase font-black text-blue-500 tracking-widest italic">Sujet</label>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Sujet</label>
                       <input 
                         required
                         value={formData.subject}
                         onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                        type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-600 text-white transition-all text-sm" placeholder="Audit / Développement..." 
+                        type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner" placeholder="Audit / Développement..." 
                       />
                     </div>
 
-                    <div className="space-y-1">
-                      <label className="text-[9px] md:text-[10px] uppercase font-black text-blue-500 tracking-widest italic">Message</label>
+                    <div className="space-y-2">
+                      <label className="text-[10px] uppercase font-black text-blue-500 tracking-widest ml-2 italic">Votre Message</label>
                       <textarea 
                         required
                         value={formData.message}
                         onChange={(e) => setFormData({...formData, message: e.target.value})}
-                        rows="3" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-600 text-white transition-all resize-none text-sm" placeholder="Dites-moi tout..."
+                        rows="4" className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-600 text-white transition-all shadow-inner resize-none" placeholder="Dites-moi tout..."
                       ></textarea>
                     </div>
 
                     <motion.button 
                       disabled={status === 'loading'}
-                      whileTap={{ scale: 0.95 }} 
-                      className="w-full bg-blue-600 py-4 md:py-5 rounded-2xl font-black text-white uppercase tracking-[0.2em] text-[10px] md:text-xs hover:bg-blue-500 transition-all shadow-2xl flex items-center justify-center gap-4 group"
+                      whileTap={{ scale: 0.95 }}
+                      type="submit"
+                      className="w-full bg-blue-600 py-5 md:py-6 rounded-3xl font-black text-white uppercase tracking-[0.3em] text-[11px] md:text-xs hover:bg-blue-500 transition-all shadow-2xl shadow-blue-600/30 flex items-center justify-center gap-4 group"
                     >
                       {status === 'loading' ? 'Envoi en cours...' : 'Envoyer la demande'} 
                       <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
                     </motion.button>
 
-                    {/* Messages d'état */}
-                    {status === 'success' && <p className="text-green-500 text-center text-xs mt-2 font-bold">Message envoyé avec succès ! 🚀</p>}
-                    {status === 'error' && <p className="text-red-500 text-center text-xs mt-2 font-bold">Erreur lors de l'envoi. Réessayez.</p>}
+                    {/* Affichage des états d'envoi */}
+                    {status === 'success' && <p className="text-green-500 text-center text-xs font-bold">Message envoyé avec succès ! 🚀</p>}
+                    {status === 'error' && <p className="text-red-500 text-center text-xs font-bold">Erreur lors de l'envoi. Réessayez.</p>}
                   </form>
                 </div>
              </motion.div>
