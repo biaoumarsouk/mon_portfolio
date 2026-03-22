@@ -232,9 +232,9 @@ const App = () => {
       <footer className="py-20 md:py-32 text-center border-t border-white/5 bg-slate-950/20 font-bold uppercase text-[10px] tracking-widest italic">
         <div className="max-w-4xl mx-auto px-8">
           <motion.div {...reveal}>
-            <h2 className="text-3xl md:text-6xl font-black text-white italic tracking-tighter mb-8 leading-tight uppercase">
+            <h2 className="text-3xl md:text-6xl font-black text-white italic tracking-tighter mb-8 leading-tight uppercase tracking-tighter">
               Prêt à propulser <br />
-              <span className="text-blue-500 underline decoration-white/10 underline-offset-8 italic">vos infrastructures ?</span>
+              <span className="text-blue-500 underline decoration-white/10 underline-offset-8 italic">vos projets informatiques ?</span>
             </h2>
             <div className="flex flex-wrap justify-center gap-8 md:gap-16 mb-20 font-black uppercase text-[10px] tracking-[0.2em]">
                <a href="#" className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
