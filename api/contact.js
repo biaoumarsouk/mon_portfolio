@@ -24,12 +24,12 @@ export default async function handler(req, res) {
       Messages: [
         {
           From: {
-            Email: "TON_EMAIL_VÉRIFIÉ_SUR_MAILJET@gmail.com", // <--- METS TON MAIL ICI
+            Email: "biaoumarsouk@gmail.com", // <--- METS TON MAIL ICI
             Name: "Contact Portfolio"
           },
           To: [
             {
-              Email: "TON_EMAIL_DE_RÉCEPTION@gmail.com", // <--- METS TON MAIL ICI
+              Email: "biaoumarsouk@gmail.com", // <--- METS TON MAIL ICI
               Name: "Marsouk"
             }
           ],
