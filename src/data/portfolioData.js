@@ -65,7 +65,7 @@ export const portfolioData = {
       details: "Réalisation en équipe de la refonte du site de l’ONG ADNA. Utilisation du framework Laravel, travail collaboratif et mutualisation des efforts.",
       tags: ["Laravel", "PHP", "Agile"],
       photo: "/photo-maelan.jpg",
-      document: "/nom-du-fichier.pdf"
+      document: "https://drive.google.com/file/d/1PAU6nnVCPsCUn-w0UvrzQxh9SYSyfp2Y/view?usp=drive_link"
     }
   ],
 
@@ -78,7 +78,7 @@ export const portfolioData = {
       periode: "2022 - 2025",
       // AJOUTE CECI :
       photo: "/photo-diplome-Licence.jpg", // Mets ta photo dans le dossier public/
-      document: "/nom-du-fichier.pdf",
+      document: "https://drive.google.com/file/d/1z9HKwu7k_YO2rvJmT9VImBLQHsNEstpp/view?usp=drive_link",
       details: "Ma formation à l'ENEAM m'a permis d'acquérir une expertise solide en administration système et réseau. Ma soutenance portait sur l'automatisation des sauvegardes réseau (Mention Très Bien). J'y ai appris la gestion des infrastructures Cisco, la sécurité informatique et le déploiement de serveurs Linux/Windows."
     },
     {
