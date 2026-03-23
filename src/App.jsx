@@ -172,28 +172,55 @@ const App = () => {
           </div>
         </section>
 
-         {/* --- SECTION 03: FORMATIONS --- */}
-        <section className="py-12 md:py-32 border-b border-white/5">
-          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">03. Formations</motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+        {/* --- SECTION 03: DIPLÔMES ET FORMATIONS --- */}
+        <section className="py-16 md:py-32 border-b border-white/5">
+          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">
+            03. Formations
+          </motion.h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
             {portfolioData.formations.map((f, i) => (
-              <motion.div key={i} {...reveal} className="group relative bg-white/[0.02] border border-white/5 p-10 md:p-14 rounded-[50px] flex flex-col justify-between min-h-[400px] md:min-h-[450px] shadow-2xl overflow-hidden transition-all duration-500">
-                <div className="absolute -top-6 -right-6 opacity-5 text-white pointer-events-none"><GraduationCap size={200} /></div>
-                <div className="relative z-10 font-bold">
-                  <div className="flex items-center gap-4 mb-10"><div className="h-[2px] w-12 bg-blue-500" /><span className="text-blue-500 font-black text-xs uppercase tracking-[0.3em]">Promotion {f.periode}</span></div>
-                  <h3 className="text-3xl lg:text-4xl font-black text-white uppercase italic tracking-tighter leading-[0.9] mb-6">{f.diplome}</h3>
-                  <p className="text-blue-400/80 font-bold text-xl italic mb-10 underline decoration-blue-500/20 underline-offset-8">{f.option}</p>
+              <motion.div 
+                key={i} 
+                {...reveal} 
+                className="group relative bg-white/[0.02] border border-white/5 p-10 md:p-14 rounded-[50px] hover:bg-white/[0.04] hover:border-blue-500/20 transition-all duration-500 flex flex-col justify-between min-h-[450px] shadow-2xl overflow-hidden"
+              >
+                <div className="absolute -top-6 -right-6 opacity-5 group-hover:opacity-10 group-hover:scale-110 transition-all duration-700 pointer-events-none text-white">
+                  <GraduationCap size={200} strokeWidth={1} />
                 </div>
-                <div className="mt-auto relative z-10 font-bold">
-                  <p className="text-slate-500 text-xs font-black uppercase tracking-[0.2em] mb-10 flex items-center gap-3 italic"><MapPin size={14} className="text-blue-500" /> {f.etablissement}</p>
+                <div className="relative z-10">
+                  <div className="flex items-center gap-4 mb-10">
+                    <div className="h-[2px] w-12 bg-blue-500" />
+                    <span className="text-blue-500 font-black text-xs uppercase tracking-[0.3em]">Promotion {f.periode}</span>
+                  </div>
+                  <h3 className="text-3xl lg:text-4xl font-black text-white uppercase italic tracking-tighter leading-[0.9] mb-6 group-hover:text-blue-400 transition-colors duration-500">
+                    {f.diplome}
+                  </h3>
+                  <p className="text-blue-400/80 font-bold text-xl italic mb-10 underline decoration-blue-500/20 underline-offset-8">
+                    {f.option}
+                  </p>
+                </div>
+                <div className="mt-auto relative z-10">
+                  <p className="text-slate-500 text-xs font-black uppercase tracking-[0.2em] mb-10 flex items-center gap-3 italic font-bold">
+                     <MapPin size={14} className="text-blue-500" /> {f.etablissement}
+                  </p>
+                  
                   {f.details ? (
-                    <button onClick={() => setSelectedFormation(f)} className="inline-flex items-center gap-4 bg-white/5 text-white border border-white/10 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all group/btn cursor-pointer shadow-xl">
-                      Détails du diplôme <PlusCircle size={18} className="group-hover/btn:rotate-90 transition-transform text-blue-500 group-hover/btn:text-black" />
+                    <button 
+                      onClick={() => setSelectedFormation(f)}
+                      className="inline-flex items-center gap-4 bg-white/5 text-white border border-white/10 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-500 group/btn cursor-pointer shadow-xl"
+                    >
+                      Détails du diplôme 
+                      <PlusCircle size={18} className="group-hover/btn:rotate-90 transition-transform duration-500 text-blue-500 group-hover/btn:text-black" />
                     </button>
                   ) : f.document ? (
-                    <a href={f.document} target="_blank" rel="noreferrer" className="inline-flex items-center gap-4 bg-blue-600/10 text-blue-400 border border-blue-500/30 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-xl">
-                      {f.isProtected ? <Lock size={16} /> : <Download size={18} />}
-                      {f.isProtected ? "Demander l'accès" : "Télécharger"}
+                    <a 
+                      href={f.document} 
+                      download 
+                      className="inline-flex items-center gap-4 bg-blue-600/10 text-blue-400 border border-blue-500/30 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all duration-500 group/btn shadow-xl"
+                    >
+                      Télécharger le diplôme 
+                      <Download size={18} className="group-hover/btn:-translate-y-1 transition-transform duration-500" />
                     </a>
                   ) : null}
                 </div>
@@ -201,6 +228,7 @@ const App = () => {
             ))}
           </div>
         </section>
+
         {/* --- SECTION 04: LANGUES --- */}
         <section className="py-16 md:py-32 border-b border-white/5">
           <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">04. Langues</motion.h2>
@@ -419,30 +447,24 @@ const App = () => {
           </div>
         )}
 
-        {/* MODAL DIPLÔME (Full size mobile + Drive Secure) */}
+        {/* MODAL DÉTAILS DIPLÔME */}
         {selectedFormation && (
-          <div className="fixed inset-0 z-[200] flex justify-center items-start md:items-center p-0 md:p-4 bg-black/95 backdrop-blur-xl overflow-y-auto italic font-bold">
-            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="bg-slate-900 border-none md:border md:border-white/10 rounded-none md:rounded-[50px] w-full max-w-5xl relative flex flex-col md:flex-row overflow-hidden my-0 md:my-auto shadow-2xl font-bold italic">
-              <div className="md:w-1/2 h-[100dvh] md:h-auto bg-slate-800 relative border-b md:border-b-0 md:border-r border-white/5 font-bold italic font-bold font-bold font-bold">
-                <img src={selectedFormation.photo} alt="Diplôme" className="w-full h-full object-contain bg-black/20" />
-                <button onClick={() => setSelectedFormation(null)} className="absolute top-6 right-6 text-white p-3 bg-black/40 backdrop-blur-md rounded-full md:hidden font-bold font-bold font-bold"><X size={28} /></button>
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent md:hidden font-bold font-bold font-bold" />
+          <div className="fixed inset-0 z-[200] flex justify-center items-start md:items-center p-4 bg-black/95 backdrop-blur-xl overflow-y-auto italic font-bold">
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="bg-slate-900 border border-white/10 rounded-[40px] md:rounded-[50px] w-full max-w-5xl relative flex flex-col md:flex-row overflow-hidden my-8 shadow-2xl italic font-bold">
+              <div className="md:w-1/2 h-[400px] md:h-auto bg-slate-800 relative italic font-bold">
+                <img src={selectedFormation.photo} alt="Diplôme" className="w-full h-full object-cover object-center italic font-bold" />
               </div>
-              <div className="md:w-1/2 p-8 md:p-14 flex flex-col justify-center font-bold italic font-bold font-bold">
-                <button onClick={() => setSelectedFormation(null)} className="hidden md:block absolute top-6 right-6 text-slate-500 hover:text-white p-2 bg-white/5 rounded-full font-bold font-bold font-bold"><X size={32} /></button>
-                <h2 className="text-2xl md:text-3xl font-black text-white italic uppercase mb-4 tracking-widest font-bold">Succès Académique</h2>
-                <div className="mb-6 md:mb-8 italic font-bold font-bold"><p className="text-[10px] uppercase font-black text-blue-500 tracking-[0.3em] mb-2 italic italic font-bold font-bold font-bold">Diplôme obtenu</p><h3 className="text-xl md:text-2xl font-black text-white uppercase italic tracking-tighter leading-tight font-bold font-bold font-bold font-bold font-bold">{selectedFormation.diplome}</h3></div>
-                <div className="p-6 bg-white/[0.03] rounded-2xl md:rounded-3xl border border-white/5 mb-6 md:mb-8 italic italic font-bold font-bold font-bold font-bold font-bold"><p className="text-slate-400 leading-relaxed italic text-base md:text-lg font-bold font-bold font-bold">{selectedFormation.details}</p></div>
-                
-                {/* BOUTON DRIVE SÉCURISÉ */}
+              <div className="md:w-1/2 p-8 md:p-14 flex flex-col justify-center italic font-bold">
+                <button onClick={() => setSelectedFormation(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white transition cursor-pointer italic font-bold"><X size={32} /></button>
+                <h2 className="text-3xl font-black text-white italic uppercase mb-4 tracking-widest italic font-bold">Succès Académique</h2>
+                <div className="mb-8"><p className="text-[10px] uppercase font-black text-blue-500 tracking-[0.3em] mb-2 italic tracking-widest italic font-bold font-bold">Diplôme obtenu</p><h3 className="text-2xl font-black text-white uppercase italic tracking-tighter leading-tight tracking-widest italic font-bold font-bold">{selectedFormation.diplome}</h3></div>
+                <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 mb-8"><p className="text-slate-400 leading-relaxed italic text-lg tracking-widest italic font-bold font-bold">{selectedFormation.details}</p></div>
                 {selectedFormation.document && (
-                  <a href={selectedFormation.document} target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 transition-all mb-6 md:mb-8 w-fit shadow-xl font-bold font-bold font-bold">
-                    {selectedFormation.isProtected ? <Lock size={18} /> : <Download size={18} />} 
-                    {selectedFormation.isProtected ? "Demander l'accès au diplôme (PDF)" : "Télécharger le diplôme (PDF)"}
+                  <a href={selectedFormation.document} download className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 transition-all mb-8 w-fit shadow-xl italic font-bold font-bold">
+                    <Download size={18} /> Télécharger le diplôme (PDF)
                   </a>
                 )}
-
-                <div className="flex items-center gap-4 text-slate-500 font-black text-[10px] uppercase tracking-widest italic mt-auto border-t border-white/5 pt-4 font-bold font-bold font-bold font-bold"><Award className="text-blue-500" /> {selectedFormation.etablissement} — {selectedFormation.periode}</div>
+                <div className="flex items-center gap-4 text-slate-500 font-black text-[10px] uppercase tracking-widest italic mt-auto tracking-widest italic font-bold font-bold"><Award className="text-blue-500" /> {selectedFormation.etablissement} — {selectedFormation.periode}</div>
               </div>
             </motion.div>
           </div>
@@ -451,4 +473,5 @@ const App = () => {
     </div>
   );
 };
+
 export default App;
