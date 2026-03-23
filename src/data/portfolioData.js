@@ -97,7 +97,7 @@ export const portfolioData = {
     email: "biaoumarsouk@gmail.com",
     telephone: "+229 01 57 77 53 08",
     localisation: "Cotonou, Bénin",
-    linkedin: "https://linkedin.com/in/marsouk",
+    linkedin: "https://bj.linkedin.com/in/marsouk-biaou-698198324",
     whatsapp: "https://wa.me/2290157775308",
     facebook: "https://www.facebook.com/share/18Dwckaxwb/?mibextid=wwXIfr"
   },
