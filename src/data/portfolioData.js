@@ -94,11 +94,12 @@ export const portfolioData = {
   atouts: ["Créatif et innovant", "Solutionneur de problèmes", "Apprentissage rapide", "Esprit d'équipe"],
 
   contact: {
-    email: "ton-email@exemple.com",
-    telephone: "+229 XX XX XX XX",
+    email: "biaoumarsouk@gmail.com",
+    telephone: "+229 01 57 77 53 08",
     localisation: "Cotonou, Bénin",
     linkedin: "https://linkedin.com/in/marsouk",
-    github: "https://github.com/marsouk"
+    whatsapp: "https://wa.me/2290157775308",
+    facebook: "https://www.facebook.com/share/18Dwckaxwb/?mibextid=wwXIfr"
   },
   
   langues: [

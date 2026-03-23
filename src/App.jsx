@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Github, Linkedin, Mail, X, Download, PlusCircle, 
+  Linkedin, Mail, X, Download, PlusCircle, 
   Server, Code2, ShieldCheck, GraduationCap, Briefcase, 
   User, MapPin, Calendar, Fingerprint, Info, Zap, 
-  CheckCircle2, Award, FileText, ArrowRight
+  CheckCircle2, Award, FileText, ArrowRight,
+  Facebook, MessageCircle // <-- On ajoute ces deux là
 } from 'lucide-react';
 import { portfolioData } from './data/portfolioData';
 
@@ -264,18 +265,18 @@ const App = () => {
               <span className="text-blue-500 underline decoration-white/10 underline-offset-8 italic">vos projets informatiques ?</span>
             </h2>
             <div className="flex flex-wrap justify-center gap-8 md:gap-16 mb-20 font-black uppercase text-[10px] tracking-[0.2em]">
-               <a href="#" className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
+               <a href={portfolioData.contact.linkedin} className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
                   <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-blue-600 transition-all duration-500 shadow-xl"><Linkedin size={28} /></div>
                   <span>LinkedIn</span>
                </a>
-               <a href="#" className="hover:text-white transition-all flex flex-col items-center gap-4 group">
-                  <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-500 shadow-xl"><Github size={28} /></div>
-                  <span>GitHub</span>
+               <a href={portfolioData.contact.whatsapp} className="hover:text-white transition-all flex flex-col items-center gap-4 group">
+                  <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-500 shadow-xl"><MessageCircle size={28} /></div>
+                  <span>Whatsapp</span>
                </a>
-               <button onClick={() => setIsContactOpen(true)} className="hover:text-blue-400 transition-all flex flex-col items-center gap-4 group cursor-pointer outline-none">
-                  <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-blue-400 transition-all duration-500 shadow-xl"><Mail size={28} /></div>
-                  <span>Me Contacter</span>
-               </button>
+               <a href={portfolioData.contact.facebook} className="hover:text-white transition-all flex flex-col items-center gap-4 group">
+                  <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-500 shadow-xl"><Facebook size={28} /></div>
+                  <span>Facebook</span>
+               </a>
             </div>
             <div className="pt-12 border-t border-white/5 font-black uppercase text-[10px] tracking-widest italic">
               <p className="text-slate-800 tracking-[1em]">Engineering Portfolio — 2026</p>
