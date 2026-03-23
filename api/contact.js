@@ -24,7 +24,7 @@ export default async function handler(req, res) {
       Messages: [
         {
           From: {
-            Email: "biaoumarsouk@gmail.com", // <--- METS TON MAIL ICI
+            Email: "portfolio@marsouk.kesug.com", // <--- METS TON MAIL ICI
             Name: "Contact Portfolio"
           },
           To: [
