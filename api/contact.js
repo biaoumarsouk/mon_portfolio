@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
   // VERIFICATION DES CLES
   if (!process.env.MAILJET_API_KEY || !process.env.MAILJET_SECRET_KEY) {
-    console.error("ERREUR: Clé API manquantes");
+    console.error("ERREUR: Clés API manquantes");
     return res.status(500).json({ success: false, error: "Clés API manquantes sur Vercel" });
   }
 
