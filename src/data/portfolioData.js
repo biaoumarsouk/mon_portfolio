@@ -92,7 +92,7 @@ export const portfolioData = {
     }
   ],
 
-  atouts: ["Créatif et innovant", "Solutionneur de problèmes", "Apprentissage rapide", "Esprit d'équipe"],
+  atouts: ["Créatif et innovant", "Solutionneur de problèmes", "Apprentissage rapide", " Esprit d’équipe et collaboration"],
 
   contact: {
     email: "biaoumarsouk@gmail.com",
