@@ -46,7 +46,7 @@ export const portfolioData = {
       details: "Réalisation du projet : 'Conception et déploiement d’un système automatisé de sauvegarde et de restauration des configurations réseau'. Mention Très Bien. Redimensionnement et configuration d'équipements Cisco et pare-feu.",
       tags: ["Cisco", "Sécurité", "Réseau"],
        photo: "photo-ust.jpg",
-      document: "/nom-du-fichier.pdf"
+      document: "https://drive.google.com/file/d/1zyi5fRDXnI8OceAKFrAJCJZ9uMNQaUy6/view?usp=drive_link"
     },
     {
       id: 2,
@@ -55,7 +55,7 @@ export const portfolioData = {
       periode: "Juin 2024 – Septembre 2024",
       details: "Contribution au développement du site web (React.js) et de l'application mobile (React Native). Utilisation de Figma pour le prototypage et le design d’applications.",
       tags: ["React", "React Native", "Figma"],
-      document: "/nom-du-fichier.pdf"
+      document: "https://drive.google.com/file/d/1EzBTnPtYKT2xpWvZH5o3zfGAdMeEKjFq/view?usp=drive_link"
     },
     {
       id: 3,
@@ -86,7 +86,7 @@ export const portfolioData = {
       option: "Enseignement Général",
       etablissement: "Les Petites Âmes, Cotonou, Bénin",
       periode: "2021 - 2022",
-      document: "/nom-du-fichier.pdf"
+      document: "https://drive.google.com/file/d/1JxaEjIVSXbQFx1hE0IjI-pZ-PLto-DeM/view?usp=drive_link"
       // Pas de détails pour le BAC, donc pas de bouton "Détails"
     }
   ],
