@@ -269,12 +269,12 @@ const App = () => {
                   <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-blue-600 transition-all duration-500 shadow-xl"><Linkedin size={28} /></div>
                   <span>LinkedIn</span>
                </a>
-               <a href={portfolioData.contact.whatsapp} className="hover:text-white transition-all flex flex-col items-center gap-4 group">
-                  <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-500 shadow-xl"><MessageCircle size={28} /></div>
+               <a href={portfolioData.contact.whatsapp} className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
+                  <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-blue-600 transition-all duration-500 shadow-xl"><MessageCircle size={28} /></div>
                   <span>Whatsapp</span>
                </a>
-               <a href={portfolioData.contact.facebook} className="hover:text-white transition-all flex flex-col items-center gap-4 group">
-                  <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-white group-hover:text-black transition-all duration-500 shadow-xl"><Facebook size={28} /></div>
+               <a href={portfolioData.contact.facebook} className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
+                  <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-blue-600 transition-all duration-500 shadow-xl"><Facebook size={28} /></div>
                   <span>Facebook</span>
                </a>
             </div>

@@ -15,7 +15,7 @@ export const portfolioData = {
     lieu: "Ekpè, Bénin",
     nationalite: "Béninoise",
     passion: "Conception, administration et sécurisation des systèmes d’information.",
-    bioLongue: "Titulaire d’une Licence en Informatique de Gestion à l'ENEAM, je me spécialise dans l'administration des réseaux. Mon parcours hybride me permet de comprendre aussi bien les infrastructures physiques que le développement d'applications modernes avec React et Laravel.",
+    bioLongue: "Titulaire d’une Licence en Informatique de Gestion à l'ENEAM, je me spécialise dans l'administration des réseaux. Mon parcours hybride me permet de comprendre aussi bien les infrastructures physiques que le développement d'applications modernes.",
     photos: ["/ma-photo.jpg"] // Place ta photo dans le dossier public/ sous ce nom
   },
 
@@ -55,6 +55,7 @@ export const portfolioData = {
       periode: "Juin 2024 – Septembre 2024",
       details: "Contribution au développement du site web (React.js) et de l'application mobile (React Native). Utilisation de Figma pour le prototypage et le design d’applications.",
       tags: ["React", "React Native", "Figma"],
+      photo: "/photo-inawo.jpg",
       document: "https://drive.google.com/file/d/1EzBTnPtYKT2xpWvZH5o3zfGAdMeEKjFq/view?usp=drive_link"
     },
     {
@@ -79,7 +80,7 @@ export const portfolioData = {
       // AJOUTE CECI :
       photo: "/photo-diplome-Licence.jpg", // Mets ta photo dans le dossier public/
       document: "https://drive.google.com/file/d/1z9HKwu7k_YO2rvJmT9VImBLQHsNEstpp/view?usp=drive_link",
-      details: "Ma formation à l'ENEAM m'a permis d'acquérir une expertise solide en administration système et réseau. Ma soutenance portait sur l'automatisation des sauvegardes réseau (Mention Très Bien). J'y ai appris la gestion des infrastructures Cisco, la sécurité informatique et le déploiement de serveurs Linux/Windows."
+      details: "Ma formation à l'ENEAM m'a permis d'acquérir une expertise solide en administration système et réseau. Ma soutenance portait sur l'automatisation des sauvegardes et restaurations des configurations réseau (Mention Très Bien). J'y ai appris la gestion des infrastructures réseaux, la sécurité informatique et le déploiement de serveurs Linux/Windows."
     },
     {
       diplome: "Baccalauréat, série D",
