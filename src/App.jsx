@@ -116,7 +116,7 @@ const App = () => {
                   download="CV_MARSOUK.pdf" 
                   className="flex items-center gap-3 p-5 border border-slate-800 rounded-2xl hover:bg-slate-900 hover:border-blue-500 transition-all text-white font-black text-xs uppercase tracking-widest"
                 >
-                  Mon CV <Download size={18} />
+                  Télécharger mon CV <Download size={18} />
               </a>
             </div>
           </motion.div>
