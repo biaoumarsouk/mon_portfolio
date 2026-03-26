@@ -13,6 +13,7 @@ export const portfolioData = {
     nomComplet: "BIAOU Malomon Abdou Marsouk", 
     naissance: "19 Février 2005", // À modifier
     lieu: "Ekpè, Bénin",
+    reside:"Cotonou, Bénin",
     nationalite: "Béninoise",
     passion: "Conception, administration et sécurisation des systèmes d’information.",
     bioLongue: "Titulaire d’une Licence en Informatique de Gestion à l'ENEAM, je me spécialise dans l'administration des réseaux. Mon parcours hybride me permet de comprendre aussi bien les infrastructures physiques que le développement d'applications modernes.",
@@ -89,6 +90,31 @@ export const portfolioData = {
       periode: "2021 - 2022",
       document: "https://drive.google.com/file/d/1JxaEjIVSXbQFx1hE0IjI-pZ-PLto-DeM/view?usp=drive_link"
       // Pas de détails pour le BAC, donc pas de bouton "Détails"
+    }
+  ],
+
+  projets: [
+    {
+      id: 1,
+      titre: "Système d'Automatisation Réseau",
+      description: "Script Python pour la sauvegarde automatique des configurations de switches Cisco et l'envoi de rapports par email.",
+      tech: ["Python", "Paramiko", "Netmiko"],
+      image: "/projet-reseau.jpg", // Optionnel
+      liens: [
+        { nom: "GitHub", url: "https://github.com/...", type: "github" },
+        { nom: "Documentation", url: "https://drive.google.com/...", type: "drive" }
+      ]
+    },
+    {
+      id: 2,
+      titre: "Application E-commerce Inawo",
+      description: "Développement d'une interface moderne pour la vente en ligne avec gestion du panier et paiements sécurisés.",
+      tech: ["React.js", "Tailwind CSS", "Node.js"],
+      image: "/projet-web.jpg",
+      liens: [
+        { nom: "Site Web", url: "https://inawo.com", type: "web" },
+        { nom: "Code Source", url: "https://github.com/...", type: "github" }
+      ]
     }
   ],
 

@@ -5,7 +5,7 @@ import {
   Server, Code2, ShieldCheck, GraduationCap, Briefcase, 
   User, MapPin, Calendar, Fingerprint, Info, Zap, 
   CheckCircle2, Award, FileText, ArrowRight,
-  Facebook, MessageCircle // <-- On ajoute ces deux là
+  Facebook, MessageCircle, Lock, Github, Globe, HardDrive, ExternalLink,Locate
 } from 'lucide-react';
 import { portfolioData } from './data/portfolioData';
 
@@ -22,6 +22,16 @@ const App = () => {
   // 1. Ajoute ces états en haut de ton composant App
   const [status, setStatus] = useState(null); // 'loading', 'success', 'error'
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+
+  const getLinkIcon = (type) => {
+    switch(type) {
+      case 'github': return <Github size={16} />;
+      case 'drive': return <HardDrive size={16} />;
+      case 'web': return <Globe size={16} />;
+      default: return <ExternalLink size={16} />;
+    }
+  };
+
 
   // 2. Ajoute la fonction de soumission
   const handleSubmit = async (e) => {
@@ -114,6 +124,8 @@ const App = () => {
               <a 
                   href={portfolioData.profil.cvLink} 
                   download="CV_MARSOUK.pdf" 
+                  target="_blank" 
+                  rel="noreferrer" 
                   className="flex items-center gap-3 p-5 border border-slate-800 rounded-2xl hover:bg-slate-900 hover:border-blue-500 transition-all text-white font-black text-xs uppercase tracking-widest"
                 >
                   Télécharger mon CV <Download size={18} />
@@ -216,6 +228,8 @@ const App = () => {
                   ) : f.document ? (
                     <a 
                       href={f.document} 
+                      target="_blank" 
+                      rel="noreferrer" 
                       download 
                       className="inline-flex items-center gap-4 bg-blue-600/10 text-blue-400 border border-blue-500/30 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all duration-500 group/btn shadow-xl"
                     >
@@ -229,9 +243,44 @@ const App = () => {
           </div>
         </section>
 
+        {/* --- 04. PROJETS (NOUVELLE SECTION) --- */}
+        <section className="py-12 md:py-32 border-b border-white/5 font-bold italic">
+          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 italic">04. Projets Réalisés</motion.h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+            {portfolioData.projets.map((projet, i) => (
+              <motion.div key={projet.id} {...reveal} transition={{ delay: i * 0.1 }} className="bg-white/[0.02] border border-white/5 rounded-[40px] p-8 md:p-12 hover:bg-white/[0.04] transition-all group shadow-2xl flex flex-col justify-between">
+                <div>
+                  <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-4 group-hover:text-blue-500 transition-colors">{projet.titre}</h3>
+                  <p className="text-slate-400 text-lg leading-relaxed mb-8 opacity-80">{projet.description}</p>
+                  <div className="flex flex-wrap gap-2 mb-10">
+                    {projet.tech.map(t => (
+                      <span key={t} className="bg-white/5 px-4 py-1.5 rounded-xl text-[10px] font-black text-blue-400 border border-white/10 uppercase">{t}</span>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* LISTE DES LIENS DYNAMIQUE */}
+                <div className="flex flex-wrap gap-4 pt-6 border-t border-white/5">
+                  {projet.liens.map((lien, j) => (
+                    <a 
+                      key={j} 
+                      href={lien.url} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-black text-[10px] uppercase hover:bg-blue-600 hover:text-white transition-all shadow-md"
+                    >
+                      {getLinkIcon(lien.type)} {lien.nom}
+                    </a>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
         {/* --- SECTION 04: LANGUES --- */}
         <section className="py-16 md:py-32 border-b border-white/5">
-          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">04. Langues</motion.h2>
+          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">05. Langues</motion.h2>
           <div className="grid md:grid-cols-2 gap-12">
             {portfolioData.langues.map(l => (
               <div key={l.nom} className="flex justify-between items-end border-b-4 border-white/5 pb-6">
@@ -244,7 +293,7 @@ const App = () => {
 
         {/* --- SECTION 05: ATOUTS --- */}
         <section className="py-16 md:py-32 mb-20 md:mb-40">
-          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">05. Atouts</motion.h2>
+          <motion.h2 {...reveal} className="text-lg font-black uppercase tracking-[0.3em] text-blue-500 mb-12 md:mb-20 italic">06. Atouts</motion.h2>
           <div className="flex flex-wrap gap-6">
             {portfolioData.atouts.map(a => (
               <span key={a} className="bg-white/5 px-10 py-6 rounded-[30px] text-2xl font-black text-slate-300 border border-white/10 hover:border-blue-500 transition-all uppercase tracking-tighter italic shadow-md">
@@ -265,15 +314,18 @@ const App = () => {
               <span className="text-blue-500 underline decoration-white/10 underline-offset-8 italic">vos projets informatiques ?</span>
             </h2>
             <div className="flex flex-wrap justify-center gap-8 md:gap-16 mb-20 font-black uppercase text-[10px] tracking-[0.2em]">
-               <a href={portfolioData.contact.linkedin} className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
+               <a href={portfolioData.contact.linkedin} target="_blank" 
+                  rel="noreferrer" className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
                   <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-blue-600 transition-all duration-500 shadow-xl"><Linkedin size={28} /></div>
                   <span>LinkedIn</span>
                </a>
-               <a href={portfolioData.contact.whatsapp} className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
+               <a href={portfolioData.contact.whatsapp} target="_blank" 
+                  rel="noreferrer" className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
                   <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-blue-600 transition-all duration-500 shadow-xl"><MessageCircle size={28} /></div>
                   <span>Whatsapp</span>
                </a>
-               <a href={portfolioData.contact.facebook} className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
+               <a href={portfolioData.contact.facebook} target="_blank" 
+                  rel="noreferrer" className="hover:text-blue-500 transition-all flex flex-col items-center gap-4 group">
                   <div className="p-5 bg-white/5 rounded-full border border-white/10 group-hover:bg-blue-600 transition-all duration-500 shadow-xl"><Facebook size={28} /></div>
                   <span>Facebook</span>
                </a>
@@ -304,7 +356,9 @@ const App = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10 italic font-bold">
                   <div className="flex items-center gap-5 pb-4 border-b border-white/5"><Calendar className="text-blue-500/50" size={24} /><div><p className="text-[10px] uppercase font-black text-slate-500 tracking-widest">Né le</p><p className="text-base text-white">{portfolioData.aPropos.naissance}</p></div></div>
-                  <div className="flex items-center gap-5 pb-4 border-b border-white/5"><MapPin className="text-blue-500/50" size={24} /><div><p className="text-[10px] uppercase font-black text-slate-500 tracking-widest font-bold">Lieu</p><p className="text-base text-white">{portfolioData.aPropos.lieu}</p></div></div>
+                  <div className="flex items-center gap-5 pb-4 border-b border-white/5"><MapPin className="text-blue-500/50" size={24} /><div><p className="text-[10px] uppercase font-black text-slate-500 tracking-widest font-bold">À</p><p className="text-base text-white">{portfolioData.aPropos.lieu}</p></div></div>
+                  <div className="flex items-center gap-5 pb-4 border-b border-white/5"><Locate className="text-blue-500/50" size={24} /><div><p className="text-[10px] uppercase font-black text-slate-500 tracking-widest font-bold">Habite à</p><p className="text-base text-white">{portfolioData.aPropos.reside}</p></div></div>
+                  <div className="flex items-center gap-5 pb-4 border-b border-white/5"><Globe className="text-blue-500/50" size={24} /><div><p className="text-[10px] uppercase font-black text-slate-500 tracking-widest font-bold">Nationalité</p><p className="text-base text-white">{portfolioData.aPropos.nationalite}</p></div></div>
                 </div>
                 <p className="text-slate-400 leading-relaxed italic text-lg mb-10 border-l-2 border-blue-500/30 pl-6 font-bold uppercase text-[10px] tracking-widest italic font-bold font-bold uppercase text-[10px] tracking-widest italic font-bold">{portfolioData.aPropos.bioLongue}</p>
                 <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5"><p className="text-[10px] font-black text-blue-500 mb-2 uppercase tracking-widest italic font-bold">Ma Passion Digitale</p><p className="text-white italic font-medium leading-relaxed font-bold uppercase text-[10px] tracking-widest italic font-bold">{portfolioData.aPropos.passion}</p></div>
@@ -435,7 +489,8 @@ const App = () => {
                 <p className="text-blue-400 font-black text-xl mb-10 italic border-l-4 border-blue-500 pl-6 uppercase">{selectedExp.poste}</p>
                 <p className="text-slate-300 leading-relaxed text-xl md:text-2xl font-light mb-12 italic opacity-80 underline decoration-slate-800 underline-offset-8">{selectedExp.details}</p>
                 {selectedExp.document && (
-                  <a href={selectedExp.document} download className="inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all mb-8 shadow-xl">
+                  <a href={selectedExp.document} download target="_blank" 
+                     rel="noreferrer"  className="inline-flex items-center gap-3 bg-white text-black px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all mb-8 shadow-xl">
                     <FileText size={18} /> Télécharger l'attestation
                   </a>
                 )}
@@ -460,7 +515,8 @@ const App = () => {
                 <div className="mb-8"><p className="text-[10px] uppercase font-black text-blue-500 tracking-[0.3em] mb-2 italic tracking-widest italic font-bold font-bold">Diplôme obtenu</p><h3 className="text-2xl font-black text-white uppercase italic tracking-tighter leading-tight tracking-widest italic font-bold font-bold">{selectedFormation.diplome}</h3></div>
                 <div className="p-6 bg-white/[0.03] rounded-3xl border border-white/5 mb-8"><p className="text-slate-400 leading-relaxed italic text-lg tracking-widest italic font-bold font-bold">{selectedFormation.details}</p></div>
                 {selectedFormation.document && (
-                  <a href={selectedFormation.document} download className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 transition-all mb-8 w-fit shadow-xl italic font-bold font-bold">
+                  <a href={selectedFormation.document} download target="_blank" 
+                     rel="noreferrer" className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-500 transition-all mb-8 w-fit shadow-xl italic font-bold font-bold">
                     <Download size={18} /> Télécharger le diplôme (PDF)
                   </a>
                 )}
