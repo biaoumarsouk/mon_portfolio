@@ -5,11 +5,11 @@ export const portfolioData = {
   profil: {
     prenom: "Marsouk",
     nom: "BIAOU",
-    titre: "Étudiant en L3 MIAGE · Réseaux & développement",
+    titre: "Étudiant en L3 MIAGE · Systèmes d'information & data",
     statut: "L3 MIAGE — ISTIC, Université de Rennes",
-    accroche: "Je relie l'infrastructure réseau et les applications qui tournent dessus.",
+    accroche: "Je conçois des systèmes d'information qui aident les organisations à décider avec leurs données.",
     description:
-      "Titulaire d'une Licence en Informatique de Gestion (ENEAM), j'approfondis aujourd'hui les systèmes d'information en L3 MIAGE à l'ISTIC. Je viens de l'administration réseau et je développe des applications web et mobiles.",
+      "Étudiant en L3 MIAGE à l'ISTIC, je me forme à la conception de systèmes d'information, aux bases de données et à la gestion de projet. Mon objectif : poursuivre en Master MIAGE, parcours DABI. Mon passé en réseaux et en développement web me donne une vraie compréhension technique de ce que je modélise.",
     cvLink: "/cv-marsouk.pdf", // fichier à placer dans public/
   },
 
@@ -20,33 +20,39 @@ export const portfolioData = {
     reside: "Rennes, France", // À VÉRIFIER
     nationalite: "Béninoise",
     passion:
-      "Concevoir des systèmes d'information fiables, de l'infrastructure réseau jusqu'à l'application, en gardant le besoin métier au centre.",
+      "Les systèmes d'information et la donnée : comprendre un besoin métier, modéliser, puis construire des outils qui aident à décider.",
     bioLongue:
-      "J'ai commencé par l'administration des réseaux à l'ENEAM (Cotonou), avec un projet de sauvegarde automatisée des configurations Cisco noté Très Bien. J'ai aussi développé en React, React Native et Laravel pendant mes stages. Je poursuis en L3 MIAGE à l'ISTIC pour ajouter la conception de systèmes d'information et la gestion de projet à ce socle technique.",
+      "J'ai d'abord étudié l'administration des réseaux à l'ENEAM (Cotonou) et développé en React, React Native et Laravel lors de mes stages. Aujourd'hui en L3 MIAGE à l'ISTIC, je me concentre sur la conception de systèmes d'information, les bases de données et la gestion de projet, avec l'ambition d'intégrer le Master MIAGE parcours DABI.",
     photos: ["/ma-photo.jpg"],
   },
 
   competences: [
     {
-      titre: "Administration réseau",
-      icon: "Server",
-      items: ["Configuration de switches et routeurs", "Pare-feu", "Infrastructures sécurisées", "Téléphonie IP"],
+      // À VÉRIFIER : adapte à ce que tu vois réellement en MIAGE
+      titre: "Systèmes d'information",
+      icon: "Workflow",
+      items: ["Analyse des besoins et conception de SI", "Modélisation (UML, Merise)", "Gestion de projet", "Méthodes agiles"],
+    },
+    {
+      titre: "Données et bases de données",
+      icon: "Database",
+      items: ["Bases de données relationnelles et SQL", "Python", "Analyse et visualisation de données", "Initiation à la BI"],
     },
     {
       titre: "Développement",
       icon: "Code2",
-      items: ["React.js / React Native", "Laravel (PHP)", "Python, Java, C++", "Figma (design, prototypage)"],
+      items: ["React.js / React Native", "Laravel (PHP)", "Python, Java, C++", "Tailwind CSS"],
     },
     {
-      titre: "Sécurité et systèmes",
-      icon: "ShieldCheck",
-      items: ["Cryptographie", "Administration Linux et Windows", "Sauvegarde automatisée", "Maintenance informatique"],
+      // À VÉRIFIER : seul Figma vient de tes stages, adapte le reste
+      titre: "UI/UX Design",
+      icon: "PenTool",
+      items: ["Figma (design, prototypage)", "Maquettes d'interfaces web et mobile", "Parcours et expérience utilisateur", "Design system et cohérence visuelle"],
     },
     {
-      // À VÉRIFIER : adapte à ce que tu vois réellement en MIAGE
-      titre: "Systèmes d'information",
-      icon: "Workflow",
-      items: ["Analyse et conception de SI", "Bases de données", "Gestion de projet", "Méthodes agiles"],
+      titre: "Bases réseaux et systèmes",
+      icon: "Server",
+      items: ["Configuration Cisco et pare-feu", "Administration Linux et Windows", "Sauvegarde automatisée", "Cryptographie"],
     },
   ],
 
@@ -94,6 +100,8 @@ export const portfolioData = {
       etablissement: "ISTIC, Université de Rennes, France",
       periode: "2026 – en cours", // À VÉRIFIER
       enCours: true,
+      details:
+        "Formation à la conception de systèmes d'information, aux bases de données et à la gestion de projet. Objectif : poursuivre en Master MIAGE, parcours DABI.",
     },
     {
       id: "licence",

@@ -1,103 +1,278 @@
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Linkedin, Mail, X, Download, Server, Code2, ShieldCheck, Workflow,
+  motion, AnimatePresence, MotionConfig,
+  useScroll, useSpring, useTransform, useMotionValue,
+} from 'framer-motion';
+import {
+  Linkedin, Mail, X, Download, Server, Code2, Database, Workflow, PenTool,
   MapPin, Calendar, Globe, Github, HardDrive, ExternalLink, FileText,
-  MessageCircle, Facebook, ArrowUpRight, GraduationCap, Phone,
+  MessageCircle, Facebook, GraduationCap, Phone, ChevronDown, CheckCircle2,
+  Quote, Languages, Sparkles,
 } from 'lucide-react';
 import { portfolioData as d } from './data/portfolioData';
 
-/* ---------- Design tokens ----------
-   Encre  #0F1B2D  (sidebar, titres)
-   Papier #F1F4F8  (fond)
-   Cobalt #1D4ED8  (accent sur clair)
-   Ciel   #9DB8FF  (accent sur encre)
-   Ardoise #52607A (texte secondaire)
------------------------------------- */
+/* Encre #0F1B2D · Papier #F1F4F8 · Cobalt #1D4ED8 · Ciel #9DB8FF · Ardoise #52607A */
 const DISPLAY = "font-['Bricolage_Grotesque',sans-serif]";
 const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1D4ED8]';
+const EASE = [0.22, 1, 0.36, 1];
 
-const IconMap = { Server, Code2, ShieldCheck, Workflow };
-const linkIcon = (type) =>
-  ({ github: <Github size={15} />, drive: <HardDrive size={15} />, web: <Globe size={15} /> }[type] || <ExternalLink size={15} />);
+const IconMap = { Server, Code2, Database, Workflow, PenTool };
+const linkIcon = (t) =>
+  ({ github: <Github size={15} />, drive: <HardDrive size={15} />, web: <Globe size={15} /> }[t] || <ExternalLink size={15} />);
 
-/* ---------- Petits composants ---------- */
-const SectionTitle = ({ id, children }) => (
-  <h2 id={id} className={`${DISPLAY} mb-10 scroll-mt-24 text-3xl font-bold tracking-tight text-[#0F1B2D] md:text-4xl`}>
+const NAV = [
+  ['top', 'Accueil'],
+  ['parcours', 'Parcours'],
+  ['experiences', 'Expériences'],
+  ['competences', 'Compétences'],
+  ['projets', 'Projets'],
+];
+
+const goTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+/* ---------- Hooks ---------- */
+const useActiveSection = (ids) => {
+  const [active, setActive] = useState(ids[0]);
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: '-35% 0px -55% 0px' }
+    );
+    ids.forEach((id) => { const el = document.getElementById(id); el && obs.observe(el); });
+    return () => obs.disconnect();
+  }, [ids]);
+  return active;
+};
+
+/* ---------- Briques animées ---------- */
+const Reveal = ({ children, delay = 0, className = '' }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-60px' }}
+    transition={{ duration: 0.7, delay, ease: EASE }} className={className}
+  >
     {children}
-  </h2>
+  </motion.div>
 );
 
+const Expand = ({ open, children }) => (
+  <AnimatePresence initial={false}>
+    {open && (
+      <motion.div
+        initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+        transition={{ duration: 0.4, ease: EASE }} className="overflow-hidden"
+      >
+        {children}
+      </motion.div>
+    )}
+  </AnimatePresence>
+);
+
+const Tilt = ({ children, className }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rx = useSpring(useTransform(y, [-0.5, 0.5], [7, -7]), { stiffness: 200, damping: 20 });
+  const ry = useSpring(useTransform(x, [-0.5, 0.5], [-7, 7]), { stiffness: 200, damping: 20 });
+  const move = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    x.set((e.clientX - r.left) / r.width - 0.5);
+    y.set((e.clientY - r.top) / r.height - 0.5);
+  };
+  return (
+    <motion.article
+      onMouseMove={move} onMouseLeave={() => { x.set(0); y.set(0); }}
+      style={{ rotateX: rx, rotateY: ry, transformPerspective: 900 }}
+      whileHover={{ y: -4, boxShadow: '0 18px 40px -18px rgba(29,78,216,.45)' }}
+      className={className}
+    >
+      {children}
+    </motion.article>
+  );
+};
+
+const SectionTitle = ({ id, children }) => (
+  <Reveal>
+    <h2 id={id} className={`${DISPLAY} mb-10 scroll-mt-24 text-3xl font-bold tracking-tight text-[#0F1B2D] md:text-4xl`}>
+      {children}
+    </h2>
+  </Reveal>
+);
+
+const Tag = ({ children }) => (
+  <motion.span whileHover={{ scale: 1.08, y: -2 }} className="inline-block rounded-md bg-[#E3EAFB] px-2.5 py-1 text-xs font-medium text-[#1D4ED8]">
+    {children}
+  </motion.span>
+);
+
+const DocLink = ({ href, children }) => (
+  <motion.a
+    href={href} target="_blank" rel="noreferrer" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
+    className={`inline-flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1A43B8] ${FOCUS}`}
+  >
+    <FileText size={16} /> {children}
+  </motion.a>
+);
+
+const Photo = ({ src, alt }) => (
+  <img src={src} alt={alt} onError={(e) => { e.currentTarget.style.display = 'none'; }}
+       className="h-44 w-full rounded-lg bg-[#DCE4F2] object-cover md:h-full md:w-48" />
+);
+
+/* ---------- Menu ---------- */
+const MenuButton = ({ open, onClick }) => (
+  <motion.button
+    onClick={onClick} aria-expanded={open} aria-controls="menu-panel" whileTap={{ scale: 0.94 }}
+    animate={{ backgroundColor: open ? '#FFFFFF' : '#0F1B2D', color: open ? '#0F1B2D' : '#FFFFFF' }}
+    className={`fixed right-4 top-4 z-[60] flex items-center gap-3 rounded-full px-5 py-3 text-sm font-semibold shadow-lg md:right-6 md:top-6 ${FOCUS}`}
+  >
+    <span className="relative block h-4 w-5" aria-hidden="true">
+      <motion.span className="absolute left-0 top-0 h-0.5 w-5 rounded bg-current" animate={{ y: open ? 7 : 0, rotate: open ? 45 : 0 }} />
+      <motion.span className="absolute left-0 top-[7px] h-0.5 w-5 rounded bg-current" animate={{ opacity: open ? 0 : 1, scaleX: open ? 0 : 1 }} />
+      <motion.span className="absolute left-0 top-[14px] h-0.5 w-5 rounded bg-current" animate={{ y: open ? -7 : 0, rotate: open ? -45 : 0 }} />
+    </span>
+    {open ? 'Fermer' : 'Menu'}
+  </motion.button>
+);
+
+const MenuPanel = ({ active, onNavigate, onContact, socials }) => (
+  <motion.div
+    id="menu-panel" role="dialog" aria-modal="true" aria-label="Menu"
+    initial={{ clipPath: 'circle(0px at calc(100% - 60px) 44px)' }}
+    animate={{ clipPath: 'circle(150% at calc(100% - 60px) 44px)' }}
+    exit={{ clipPath: 'circle(0px at calc(100% - 60px) 44px)' }}
+    transition={{ duration: 0.65, ease: EASE }}
+    className="fixed inset-0 z-50 flex flex-col justify-between overflow-y-auto bg-[#0F1B2D] px-6 pb-8 pt-28 text-white md:px-16"
+  >
+    <nav aria-label="Sections">
+      <ul className="space-y-1">
+        {NAV.map(([id, text], i) => (
+          <motion.li
+            key={id} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.25 + i * 0.07, duration: 0.5, ease: EASE }}
+          >
+            <button
+              onClick={() => onNavigate(id)}
+              className={`${DISPLAY} group flex items-center gap-4 py-1.5 text-left text-4xl font-bold transition-colors md:text-6xl ${
+                active === id ? 'text-[#9DB8FF]' : 'text-white hover:text-[#9DB8FF]'
+              } ${FOCUS}`}
+            >
+              <motion.span
+                aria-hidden="true" className="block h-2.5 rounded-full bg-[#9DB8FF]"
+                animate={{ width: active === id ? 40 : 0 }} transition={{ duration: 0.4, ease: EASE }}
+              />
+              <span className="transition-transform duration-300 group-hover:translate-x-2">{text}</span>
+            </button>
+          </motion.li>
+        ))}
+      </ul>
+    </nav>
+
+    <motion.div
+      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}
+      className="mt-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
+    >
+      <div className="space-y-2 text-sm text-slate-300">
+        <p className="flex items-center gap-2"><Mail size={15} className="text-[#9DB8FF]" /> {d.contact.email}</p>
+        <p className="flex items-center gap-2"><MapPin size={15} className="text-[#9DB8FF]" /> {d.contact.localisation}</p>
+        <div className="flex gap-2 pt-2">
+          {socials.map((s) => (
+            <a key={s.label} href={s.href} target="_blank" rel="noreferrer" aria-label={s.label}
+               className={`rounded-lg border border-white/15 p-2.5 transition hover:-translate-y-0.5 hover:bg-white hover:text-[#0F1B2D] ${FOCUS}`}>
+              {s.icon}
+            </a>
+          ))}
+        </div>
+      </div>
+      <button onClick={onContact}
+        className={`rounded-lg bg-white px-6 py-3.5 font-semibold text-[#0F1B2D] transition hover:bg-[#E3EAFB] ${FOCUS}`}>
+        Me contacter
+      </button>
+    </motion.div>
+  </motion.div>
+);
+
+/* ---------- Modale ---------- */
 const Modal = ({ onClose, label, wide, children }) => {
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prev;
-    };
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
   }, [onClose]);
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#0F1B2D]/70 p-4 backdrop-blur-sm md:items-center"
+      className="fixed inset-0 z-[70]"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      onClick={onClose}
     >
-      <motion.div
-        role="dialog" aria-modal="true" aria-label={label}
-        onClick={(e) => e.stopPropagation()}
-        initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 24, opacity: 0 }}
-        className={`relative my-8 w-full overflow-hidden rounded-2xl bg-white shadow-2xl ${wide ? 'max-w-5xl' : 'max-w-2xl'}`}
+      {/* Fond défilant */}
+      <div
+        className="absolute inset-0 flex items-start justify-center overflow-y-auto bg-[#0F1B2D]/70 p-4 backdrop-blur-sm md:items-center"
+        onClick={onClose}
       >
-        <button
-          onClick={onClose} aria-label="Fermer"
-          className={`absolute right-4 top-4 z-10 rounded-full bg-white/90 p-2 text-[#0F1B2D] shadow hover:bg-white ${FOCUS}`}
+        <motion.div
+          role="dialog" aria-modal="true" aria-label={label} onClick={(e) => e.stopPropagation()}
+          initial={{ y: 40, opacity: 0, scale: 0.97 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 40, opacity: 0, scale: 0.97 }}
+          transition={{ duration: 0.4, ease: EASE }}
+          className={`relative my-8 w-full overflow-hidden rounded-2xl bg-white text-[#1C2D47] shadow-2xl ${wide ? 'max-w-5xl' : 'max-w-2xl'}`}
         >
-          <X size={20} />
-        </button>
-        {children}
-      </motion.div>
+          {children}
+        </motion.div>
+      </div>
+
+      {/* Bouton fermer : toujours visible, hors de la zone qui défile */}
+      <button
+        onClick={onClose} aria-label="Fermer"
+        className={`absolute right-4 top-4 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#0F1B2D] bg-white text-[#0F1B2D] shadow-xl transition hover:rotate-90 hover:bg-[#E3EAFB] md:right-6 md:top-6 ${FOCUS}`}
+      >
+        <X size={24} />
+      </button>
     </motion.div>
   );
 };
 
-const Tag = ({ children }) => (
-  <span className="rounded-md bg-[#E3EAFB] px-2.5 py-1 text-xs font-medium text-[#1D4ED8]">{children}</span>
-);
+/* ---------- Schéma du hero (cliquable) ---------- */
+const Topology = () => {
+  const nodes = [
+    { x: 95, t: 'Développement', s: 'React · Laravel', target: 'competences', main: false },
+    { x: 260, t: 'MIAGE', s: "Systèmes d'information", target: 'parcours', main: true },
+    { x: 425, t: 'Data · DABI', s: 'SQL · Python', target: 'projets', main: false },
+  ];
+  return (
+    <svg viewBox="0 0 520 220" role="group" aria-label="Schéma interactif : développement, MIAGE et data" className="w-full max-w-xl">
+      {[[163, 192], [328, 357]].map(([a, b], i) => (
+        <motion.path
+          key={i} d={`M${a} 110 H${b}`} stroke="#9DB8FF" strokeWidth="2" strokeDasharray="5 6" fill="none"
+          animate={{ strokeDashoffset: [0, -22] }} transition={{ repeat: Infinity, duration: 1.1, ease: 'linear' }}
+        />
+      ))}
+      {nodes.map((n, i) => (
+        <motion.g
+          key={n.t} role="button" tabIndex={0} aria-label={`Aller à la section ${n.target}`}
+          onClick={() => goTo(n.target)} onKeyDown={(e) => e.key === 'Enter' && goTo(n.target)}
+          style={{ transformBox: 'fill-box', transformOrigin: 'center', cursor: 'pointer', outline: 'none' }}
+          initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.7 + i * 0.15, duration: 0.6, ease: EASE }}
+          whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.96 }} whileFocus={{ scale: 1.08 }}
+        >
+          {n.main && (
+            <motion.rect
+              x={n.x - 68} y={70} width="136" height="80" rx="14" fill="none" stroke="#1D4ED8" strokeWidth="2"
+              style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+              animate={{ scale: [1, 1.25], opacity: [0.6, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeOut' }}
+            />
+          )}
+          <rect x={n.x - 68} y={70} width="136" height="80" rx="14" fill={n.main ? '#1D4ED8' : '#fff'} stroke="#C9D5EE" />
+          <text x={n.x} y={106} textAnchor="middle" fontSize="17" fontWeight="700" fill={n.main ? '#fff' : '#0F1B2D'} fontFamily="Bricolage Grotesque, sans-serif">{n.t}</text>
+          <text x={n.x} y={128} textAnchor="middle" fontSize="11" fill={n.main ? '#DCE6FF' : '#52607A'}>{n.s}</text>
+        </motion.g>
+      ))}
+    </svg>
+  );
+};
 
-const DocLink = ({ href, children }) => (
-  <a
-    href={href} target="_blank" rel="noreferrer"
-    className={`inline-flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1A43B8] ${FOCUS}`}
-  >
-    <FileText size={16} /> {children}
-  </a>
-);
-
-/* Schéma réseau du hero : les trois pôles du profil, MIAGE au centre */
-const Topology = () => (
-  <svg viewBox="0 0 520 220" role="img" aria-label="Schéma : réseaux, MIAGE et développement reliés" className="w-full max-w-xl">
-    <g stroke="#9DB8FF" strokeWidth="2" strokeDasharray="5 6" fill="none">
-      <path d="M95 110 H225" />
-      <path d="M295 110 H425" />
-    </g>
-    {[
-      { x: 95, y: 110, t: 'Réseaux', s: 'Cisco · Linux', fill: '#fff', ink: '#0F1B2D' },
-      { x: 260, y: 110, t: 'MIAGE', s: 'Systèmes d\'information', fill: '#1D4ED8', ink: '#fff' },
-      { x: 425, y: 110, t: 'Développement', s: 'React · Laravel', fill: '#fff', ink: '#0F1B2D' },
-    ].map((n) => (
-      <g key={n.t}>
-        <rect x={n.x - 68} y={n.y - 40} width="136" height="80" rx="14" fill={n.fill} stroke="#C9D5EE" />
-        <text x={n.x} y={n.y - 4} textAnchor="middle" fontSize="17" fontWeight="700" fill={n.ink} fontFamily="Bricolage Grotesque, sans-serif">{n.t}</text>
-        <text x={n.x} y={n.y + 18} textAnchor="middle" fontSize="11" fill={n.fill === '#fff' ? '#52607A' : '#DCE6FF'}>{n.s}</text>
-      </g>
-    ))}
-  </svg>
-);
-
+/* ---------- Formulaire ---------- */
 const ContactForm = ({ onDone }) => {
   const [status, setStatus] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -108,20 +283,16 @@ const ContactForm = ({ onDone }) => {
     setStatus('loading');
     try {
       const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form),
       });
       if (!res.ok) return setStatus('error');
       setStatus('success');
       setForm({ name: '', email: '', subject: '', message: '' });
       setTimeout(onDone, 2000);
-    } catch {
-      setStatus('error');
-    }
+    } catch { setStatus('error'); }
   };
 
-  const field = 'w-full rounded-lg border border-[#C9D5EE] bg-white px-4 py-3 text-[#0F1B2D] outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20';
+  const field = 'w-full rounded-lg border border-[#C9D5EE] bg-white px-4 py-3 text-[#0F1B2D] outline-none transition focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20';
   const label = 'mb-1.5 block text-sm font-medium text-[#0F1B2D]';
 
   return (
@@ -136,12 +307,12 @@ const ContactForm = ({ onDone }) => {
         <input id="c-subject" required type="text" value={form.subject} onChange={set('subject')} className={field} /></div>
       <div><label className={label} htmlFor="c-msg">Message</label>
         <textarea id="c-msg" required rows="5" value={form.message} onChange={set('message')} className={`${field} resize-none`} /></div>
-      <button
-        type="submit" disabled={status === 'loading'}
+      <motion.button
+        type="submit" disabled={status === 'loading'} whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}
         className={`w-full rounded-lg bg-[#1D4ED8] px-6 py-3.5 font-semibold text-white hover:bg-[#1A43B8] disabled:opacity-60 ${FOCUS}`}
       >
         {status === 'loading' ? 'Envoi en cours…' : 'Envoyer le message'}
-      </button>
+      </motion.button>
       <p aria-live="polite" className="min-h-5 text-center text-sm">
         {status === 'success' && <span className="text-green-700">Message envoyé. Je vous réponds rapidement.</span>}
         {status === 'error' && <span className="text-red-700">L'envoi a échoué. Réessayez ou écrivez-moi à {d.contact.email}.</span>}
@@ -150,17 +321,161 @@ const ContactForm = ({ onDone }) => {
   );
 };
 
+/* ---------- Bloc dépliable (parcours + expériences) ---------- */
+const Accordion = ({ open, onToggle, header, children, expandable = true }) => (
+  <div className={`rounded-xl border bg-white transition-colors ${open ? 'border-[#1D4ED8]' : 'border-[#DCE4F2] hover:border-[#9DB8FF]'}`}>
+    <button
+      onClick={expandable ? onToggle : undefined} aria-expanded={expandable ? open : undefined}
+      disabled={!expandable}
+      className={`flex w-full items-center justify-between gap-4 rounded-xl p-5 text-left md:p-6 ${expandable ? 'cursor-pointer' : 'cursor-default'} ${FOCUS}`}
+    >
+      <span>{header}</span>
+      {expandable && (
+        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.35, ease: EASE }} className="shrink-0 text-[#1D4ED8]">
+          <ChevronDown />
+        </motion.span>
+      )}
+    </button>
+    <Expand open={open}><div className="px-5 pb-6 md:px-6">{children}</div></Expand>
+  </div>
+);
+
+/* ---------- Contenu de « Qui suis-je ? » ---------- */
+const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } } };
+const rise = { hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } } };
+
+const AboutContent = ({ onContact, socials }) => {
+  const [imgOk, setImgOk] = useState(true);
+  const a = d.aPropos;
+  const initials = `${d.profil.prenom[0]}${d.profil.nom[0]}`;
+  const facts = [
+    [<Calendar size={16} />, 'Né le', a.naissance],
+    [<MapPin size={16} />, 'Originaire de', a.lieu],
+    [<MapPin size={16} />, 'Habite à', a.reside],
+    [<Globe size={16} />, 'Nationalité', a.nationalite],
+  ];
+
+  return (
+    <div className="md:flex">
+      {/* Colonne portrait */}
+      <div className="flex flex-col items-center bg-[#0F1B2D] p-8 pt-12 text-center text-white md:w-[38%] md:p-10 md:pt-14">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6, ease: EASE }}
+          className="relative"
+        >
+          <motion.span
+            aria-hidden="true" className="absolute -inset-2 rounded-full border border-[#9DB8FF]"
+            animate={{ scale: [1, 1.12], opacity: [0.7, 0] }} transition={{ repeat: Infinity, duration: 2.2, ease: 'easeOut' }}
+          />
+          <div className="h-44 w-44 overflow-hidden rounded-full border-4 border-[#1D4ED8] bg-[#1C2D47] md:h-52 md:w-52">
+            {imgOk ? (
+              <img src={a.photos[0]} alt={a.nomComplet} onError={() => setImgOk(false)} className="h-full w-full object-cover object-top" />
+            ) : (
+              <div className={`${DISPLAY} flex h-full w-full items-center justify-center text-6xl font-bold text-[#9DB8FF]`}>{initials}</div>
+            )}
+          </div>
+        </motion.div>
+
+        <motion.div variants={stagger} initial="hidden" animate="show" className="mt-8 flex flex-col items-center">
+          <motion.h3 variants={rise} className={`${DISPLAY} text-2xl font-bold`}>{d.profil.prenom} {d.profil.nom}</motion.h3>
+          <motion.p variants={rise} className="mt-1 text-sm text-[#9DB8FF]">{d.profil.titre}</motion.p>
+          <motion.p variants={rise} className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-xs font-medium">
+            <GraduationCap size={14} /> {d.profil.statut}
+          </motion.p>
+          <motion.div variants={rise} className="mt-6 flex gap-2">
+            {socials.map((s) => (
+              <a key={s.label} href={s.href} target="_blank" rel="noreferrer" aria-label={s.label}
+                 className={`rounded-lg border border-white/15 p-2.5 transition hover:-translate-y-1 hover:bg-white hover:text-[#0F1B2D] ${FOCUS}`}>
+                {s.icon}
+              </a>
+            ))}
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Colonne contenu */}
+      <motion.div variants={stagger} initial="hidden" animate="show" className="p-8 md:w-[62%] md:p-10">
+        <motion.div variants={rise} className="pr-10">
+          <h2 className={`${DISPLAY} text-3xl font-bold text-[#0F1B2D]`}>Qui suis-je ?</h2>
+          <p className="mt-1 text-sm font-medium text-[#1C2D47]">{a.nomComplet}</p>
+        </motion.div>
+
+        <motion.p variants={rise} className="mt-5 text-base leading-relaxed text-[#0F1B2D]">{a.bioLongue}</motion.p>
+
+        <motion.dl variants={rise} className="mt-6 grid gap-3 sm:grid-cols-2">
+          {facts.map(([ic, k, v]) => (
+            <motion.div key={k} whileHover={{ y: -3 }} className="flex items-center gap-3 rounded-lg bg-[#F1F4F8] p-3.5">
+              <span className="rounded-md bg-white p-2 text-[#1D4ED8]">{ic}</span>
+              <div><dt className="text-xs text-[#52607A]">{k}</dt><dd className="font-semibold text-[#0F1B2D]">{v}</dd></div>
+            </motion.div>
+          ))}
+        </motion.dl>
+
+        <motion.blockquote variants={rise} className="relative mt-6 rounded-lg border-l-4 border-[#1D4ED8] bg-[#E3EAFB] p-5 pl-6">
+          <Quote size={18} className="mb-2 text-[#1D4ED8]" aria-hidden="true" />
+          <p className="font-semibold text-[#0F1B2D]">Ce qui me motive</p>
+          <p className="mt-1 text-[#0F1B2D]">{a.passion}</p>
+        </motion.blockquote>
+
+        <motion.div variants={rise} className="mt-6 grid gap-5 sm:grid-cols-2">
+          <div>
+            <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#0F1B2D]"><Languages size={16} className="text-[#1D4ED8]" /> Langues</p>
+            <div className="flex flex-wrap gap-2">
+              {d.langues.map((l) => <Tag key={l.nom}>{l.nom} · {l.niveau}</Tag>)}
+            </div>
+          </div>
+          <div>
+            <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-[#0F1B2D]"><Sparkles size={16} className="text-[#1D4ED8]" /> Atouts</p>
+            <div className="flex flex-wrap gap-2">{d.atouts.map((t) => <Tag key={t}>{t}</Tag>)}</div>
+          </div>
+        </motion.div>
+
+        <motion.div variants={rise} className="mt-8 flex flex-wrap gap-3">
+          <motion.a whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} href={d.profil.cvLink} download="CV_Marsouk_Biaou.pdf"
+            className={`inline-flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-5 py-3 font-semibold text-white hover:bg-[#1A43B8] ${FOCUS}`}>
+            <Download size={18} /> Télécharger mon CV
+          </motion.a>
+          <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={onContact}
+            className={`rounded-lg border border-[#C9D5EE] px-5 py-3 font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] ${FOCUS}`}>
+            Me contacter
+          </motion.button>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+};
+
 /* ---------- App ---------- */
 const App = () => {
-  const [modal, setModal] = useState(null); // 'about' | 'contact' | {type:'exp'|'form', item}
-  const close = React.useCallback(() => setModal(null), []);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [modal, setModal] = useState(null); // 'about' | 'contact'
+  const [openForm, setOpenForm] = useState('miage');
+  const [openExp, setOpenExp] = useState(null);
+  const [tab, setTab] = useState(0);
 
-  const nav = [
-    ['parcours', 'Parcours'],
-    ['experiences', 'Expériences'],
-    ['competences', 'Compétences'],
-    ['projets', 'Projets'],
-  ];
+  const closeModal = useCallback(() => setModal(null), []);
+  const active = useActiveSection(NAV.map(([id]) => id));
+
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 24 });
+
+  const lineRef = useRef(null);
+  const { scrollYProgress: lineProg } = useScroll({ target: lineRef, offset: ['start 75%', 'end 60%'] });
+
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && setMenuOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [menuOpen]);
+
+  const navigate = (id) => { setMenuOpen(false); setTimeout(() => goTo(id), 350); };
 
   const socials = [
     { href: d.contact.linkedin, label: 'LinkedIn', icon: <Linkedin size={18} /> },
@@ -168,36 +483,39 @@ const App = () => {
     { href: d.contact.facebook, label: 'Facebook', icon: <Facebook size={18} /> },
   ];
 
+  const words = d.profil.accroche.split(' ');
+  const skill = d.competences[tab];
+  const SkillIcon = IconMap[skill.icon] || Code2;
+
   return (
     <MotionConfig reducedMotion="user">
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
-      />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
 
-      <div className="min-h-screen scroll-smooth bg-[#F1F4F8] font-['IBM_Plex_Sans',sans-serif] text-[#52607A] lg:grid lg:grid-cols-[340px_1fr]">
-        {/* ===== Colonne identité ===== */}
-        <aside className="bg-[#0F1B2D] px-6 py-8 text-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-between lg:px-10 lg:py-12">
-          <div>
-            <p className={`${DISPLAY} text-3xl font-bold leading-tight`}>
-              {d.profil.prenom}<br />{d.profil.nom}
-            </p>
-            <p className="mt-3 text-sm text-[#9DB8FF]">{d.profil.titre}</p>
+      <motion.div style={{ scaleX: progress }} className="fixed left-0 right-0 top-0 z-[80] h-1 origin-left bg-[#1D4ED8]" />
 
-            <nav aria-label="Sections" className="mt-8 hidden lg:block">
-              <ul className="space-y-1">
-                {nav.map(([id, text]) => (
-                  <li key={id}>
-                    <a href={`#${id}`} className={`block rounded-md py-1.5 text-slate-300 hover:text-white ${FOCUS}`}>{text}</a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
+      <MenuButton open={menuOpen} onClick={() => setMenuOpen((o) => !o)} />
+      <AnimatePresence>
+        {menuOpen && (
+          <MenuPanel
+            active={active} onNavigate={navigate} socials={socials}
+            onContact={() => { setMenuOpen(false); setModal('contact'); }}
+          />
+        )}
+      </AnimatePresence>
 
-          <div className="mt-8 space-y-5 lg:mt-0">
+      <div className="min-h-screen bg-[#F1F4F8] font-['IBM_Plex_Sans',sans-serif] text-[#52607A] lg:grid lg:grid-cols-[340px_1fr]">
+        {/* Colonne identité */}
+        <aside className="bg-[#0F1B2D] px-6 pb-8 pt-8 text-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-between lg:px-10 lg:py-12">
+          <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease: EASE }}>
+            <p className={`${DISPLAY} text-3xl font-bold leading-tight`}>{d.profil.prenom}<br />{d.profil.nom}</p>
+            <p className="mt-3 max-w-[16rem] text-sm text-[#9DB8FF]">{d.profil.titre}</p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.7, ease: EASE }}
+            className="mt-8 space-y-5 lg:mt-0"
+          >
             <ul className="space-y-2 text-sm text-slate-300">
               <li className="flex items-center gap-2"><MapPin size={15} className="text-[#9DB8FF]" /> {d.contact.localisation}</li>
               <li className="flex items-center gap-2"><Mail size={15} className="text-[#9DB8FF]" /> {d.contact.email}</li>
@@ -206,138 +524,212 @@ const App = () => {
             <div className="flex gap-2">
               {socials.map((s) => (
                 <a key={s.label} href={s.href} target="_blank" rel="noreferrer" aria-label={s.label}
-                   className={`rounded-lg border border-white/15 p-2.5 hover:bg-white hover:text-[#0F1B2D] ${FOCUS}`}>
+                   className={`rounded-lg border border-white/15 p-2.5 transition hover:-translate-y-1 hover:bg-white hover:text-[#0F1B2D] ${FOCUS}`}>
                   {s.icon}
                 </a>
               ))}
             </div>
-            <button onClick={() => setModal('contact')}
+            <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={() => setModal('contact')}
               className={`w-full rounded-lg bg-white px-4 py-3 font-semibold text-[#0F1B2D] hover:bg-[#E3EAFB] ${FOCUS}`}>
               Me contacter
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </aside>
 
-        {/* ===== Contenu ===== */}
+        {/* Contenu */}
         <main className="px-6 py-14 md:px-12 lg:px-16 lg:py-20">
           <div className="mx-auto max-w-3xl">
             {/* Hero */}
-            <section className="pb-20">
-              <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-medium text-[#1D4ED8] shadow-sm">
+            <section id="top" className="scroll-mt-24 pb-24">
+              <motion.p
+                initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }}
+                className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-medium text-[#1D4ED8] shadow-sm"
+              >
                 <GraduationCap size={16} /> {d.profil.statut}
-              </p>
-              <h1 className={`${DISPLAY} text-4xl font-bold leading-[1.1] tracking-tight text-[#0F1B2D] md:text-6xl`}>
-                {d.profil.accroche}
+              </motion.p>
+              <h1 className={`${DISPLAY} text-4xl font-bold leading-[1.15] tracking-tight text-[#0F1B2D] md:text-6xl`}>
+                {words.map((w, i) => (
+                  <span key={i} className="mr-[0.25em] inline-block overflow-hidden pb-1 align-bottom">
+                    <motion.span className="inline-block" initial={{ y: '110%' }} animate={{ y: 0 }}
+                      transition={{ duration: 0.7, delay: 0.15 + i * 0.05, ease: EASE }}>
+                      {w}
+                    </motion.span>
+                  </span>
+                ))}
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed">{d.profil.description}</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <button onClick={() => setModal('about')}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.7, ease: EASE }}
+                className="mt-6 max-w-2xl text-lg leading-relaxed"
+              >
+                {d.profil.description}
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.7, ease: EASE }}
+                className="mt-8 flex flex-wrap gap-3"
+              >
+                <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={() => setModal('about')}
                   className={`rounded-lg bg-[#0F1B2D] px-5 py-3 font-semibold text-white hover:bg-[#1C2D47] ${FOCUS}`}>
                   Qui suis-je ?
-                </button>
-                <a href={d.profil.cvLink} download="CV_Marsouk_Biaou.pdf"
-                   className={`inline-flex items-center gap-2 rounded-lg border border-[#C9D5EE] bg-white px-5 py-3 font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] ${FOCUS}`}>
+                </motion.button>
+                <motion.a whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} href={d.profil.cvLink} download="CV_Marsouk_Biaou.pdf"
+                  className={`inline-flex items-center gap-2 rounded-lg border border-[#C9D5EE] bg-white px-5 py-3 font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] ${FOCUS}`}>
                   <Download size={18} /> Télécharger mon CV
-                </a>
-              </div>
+                </motion.a>
+              </motion.div>
               <div className="mt-12"><Topology /></div>
             </section>
 
             {/* Parcours */}
-            <section className="pb-20">
+            <section className="pb-24">
               <SectionTitle id="parcours">Parcours</SectionTitle>
-              <ol className="relative space-y-8 border-l-2 border-[#C9D5EE] pl-8">
-                {d.formations.map((f) => (
-                  <li key={f.id} className="relative">
-                    <span className={`absolute -left-[41px] top-1.5 h-4 w-4 rounded-full border-4 border-[#F1F4F8] ${f.enCours ? 'bg-[#1D4ED8]' : 'bg-[#9DB8FF]'}`} />
-                    <p className="text-sm font-medium text-[#1D4ED8]">{f.periode}</p>
-                    <h3 className={`${DISPLAY} mt-1 text-xl font-bold text-[#0F1B2D]`}>{f.diplome}</h3>
-                    <p className="mt-1">{f.option}</p>
-                    <p className="mt-1 flex items-center gap-1.5 text-sm"><MapPin size={14} /> {f.etablissement}</p>
-                    <div className="mt-3 flex flex-wrap gap-3">
-                      {f.details && (
-                        <button onClick={() => setModal({ type: 'form', item: f })}
-                          className={`rounded-lg border border-[#C9D5EE] bg-white px-4 py-2 text-sm font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] ${FOCUS}`}>
-                          Voir le détail
-                        </button>
-                      )}
-                      {!f.details && f.document && (
-                        <a href={f.document} target="_blank" rel="noreferrer"
-                           className={`inline-flex items-center gap-2 text-sm font-semibold text-[#1D4ED8] hover:underline ${FOCUS}`}>
-                          <Download size={15} /> Voir le diplôme
-                        </a>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </section>
-
-            {/* Expériences */}
-            <section className="pb-20">
-              <SectionTitle id="experiences">Expériences</SectionTitle>
-              <ul className="space-y-4">
-                {d.experiences.map((e) => (
-                  <li key={e.id}>
-                    <button onClick={() => setModal({ type: 'exp', item: e })}
-                      className={`group flex w-full items-center justify-between gap-4 rounded-xl border border-[#DCE4F2] bg-white p-6 text-left hover:border-[#1D4ED8] ${FOCUS}`}>
-                      <span>
-                        <span className="text-sm font-medium text-[#1D4ED8]">{e.periode}</span>
-                        <span className={`${DISPLAY} mt-1 block text-xl font-bold text-[#0F1B2D]`}>{e.entreprise}</span>
-                        <span className="mt-0.5 block text-sm">{e.poste}</span>
-                      </span>
-                      <ArrowUpRight className="shrink-0 text-[#9DB8FF] group-hover:text-[#1D4ED8]" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            {/* Compétences */}
-            <section className="pb-20">
-              <SectionTitle id="competences">Compétences</SectionTitle>
-              <div className="grid gap-x-10 gap-y-10 sm:grid-cols-2">
-                {d.competences.map((c) => {
-                  const Icon = IconMap[c.icon] || Code2;
-                  return (
-                    <div key={c.titre}>
-                      <h3 className={`${DISPLAY} mb-3 flex items-center gap-2.5 text-lg font-bold text-[#0F1B2D]`}>
-                        <Icon size={20} className="text-[#1D4ED8]" /> {c.titre}
-                      </h3>
-                      <ul className="space-y-1.5 border-l-2 border-[#C9D5EE] pl-4">
-                        {c.items.map((i) => <li key={i}>{i}</li>)}
-                      </ul>
-                    </div>
-                  );
-                })}
+              <div ref={lineRef} className="relative pl-9">
+                <div className="absolute bottom-2 left-[7px] top-2 w-0.5 bg-[#C9D5EE]" />
+                <motion.div style={{ scaleY: lineProg }} className="absolute bottom-2 left-[7px] top-2 w-0.5 origin-top bg-[#1D4ED8]" />
+                <div className="space-y-5">
+                  {d.formations.map((f, i) => {
+                    const expandable = !!(f.details || f.document);
+                    return (
+                      <Reveal key={f.id} delay={i * 0.05} className="relative">
+                        <motion.span
+                          initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }}
+                          transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                          className={`absolute -left-9 top-7 h-4 w-4 rounded-full border-4 border-[#F1F4F8] ${f.enCours ? 'bg-[#1D4ED8]' : 'bg-[#9DB8FF]'}`}
+                        />
+                        <Accordion
+                          open={openForm === f.id} expandable={expandable}
+                          onToggle={() => setOpenForm(openForm === f.id ? null : f.id)}
+                          header={
+                            <>
+                              <span className="flex items-center gap-2 text-sm font-medium text-[#1D4ED8]">
+                                {f.periode}
+                                {f.enCours && <span className="rounded-full bg-[#1D4ED8] px-2 py-0.5 text-xs text-white">En cours</span>}
+                              </span>
+                              <span className={`${DISPLAY} mt-1 block text-xl font-bold text-[#0F1B2D]`}>{f.diplome}</span>
+                              <span className="mt-0.5 block text-sm">{f.option}</span>
+                            </>
+                          }
+                        >
+                          <div className="md:flex md:gap-6">
+                            {f.photo && <Photo src={f.photo} alt={`Diplôme : ${f.diplome}`} />}
+                            <div>
+                              {f.details && <p className="leading-relaxed">{f.details}</p>}
+                              <p className="mt-3 flex items-center gap-1.5 text-sm"><MapPin size={14} /> {f.etablissement}</p>
+                              {f.document && <div className="mt-4"><DocLink href={f.document}>Voir le diplôme</DocLink></div>}
+                            </div>
+                          </div>
+                        </Accordion>
+                      </Reveal>
+                    );
+                  })}
+                </div>
               </div>
             </section>
 
+            {/* Expériences */}
+            <section className="pb-24">
+              <SectionTitle id="experiences">Expériences</SectionTitle>
+              <div className="space-y-4">
+                {d.experiences.map((e, i) => (
+                  <Reveal key={e.id} delay={i * 0.08}>
+                    <Accordion
+                      open={openExp === e.id} onToggle={() => setOpenExp(openExp === e.id ? null : e.id)}
+                      header={
+                        <>
+                          <span className="text-sm font-medium text-[#1D4ED8]">{e.periode}</span>
+                          <span className={`${DISPLAY} mt-1 block text-xl font-bold text-[#0F1B2D]`}>{e.entreprise}</span>
+                          <span className="mt-0.5 block text-sm">{e.poste}</span>
+                        </>
+                      }
+                    >
+                      <div className="md:flex md:gap-6">
+                        {e.photo && <Photo src={e.photo} alt={e.entreprise} />}
+                        <div>
+                          <p className="leading-relaxed">{e.details}</p>
+                          <div className="mt-4 flex flex-wrap gap-2">{e.tags.map((t) => <Tag key={t}>{t}</Tag>)}</div>
+                          {e.document && <div className="mt-5"><DocLink href={e.document}>Voir l'attestation</DocLink></div>}
+                        </div>
+                      </div>
+                    </Accordion>
+                  </Reveal>
+                ))}
+              </div>
+            </section>
+
+            {/* Compétences : onglets */}
+            <section className="pb-24">
+              <SectionTitle id="competences">Compétences</SectionTitle>
+              <Reveal>
+                <div role="tablist" aria-label="Domaines de compétences" className="mb-6 flex flex-wrap gap-2">
+                  {d.competences.map((c, i) => (
+                    <button
+                      key={c.titre} role="tab" aria-selected={tab === i} onClick={() => setTab(i)}
+                      className={`relative rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                        tab === i ? 'text-white' : 'bg-white text-[#0F1B2D] hover:bg-[#E3EAFB]'
+                      } ${FOCUS}`}
+                    >
+                      {tab === i && (
+                        <motion.span layoutId="tab-pill" className="absolute inset-0 rounded-full bg-[#1D4ED8]"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
+                      )}
+                      <span className="relative">{c.titre}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="min-h-[15rem] rounded-xl border border-[#DCE4F2] bg-white p-6 md:p-8">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={tab} role="tabpanel"
+                      initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+                      transition={{ duration: 0.3, ease: EASE }}
+                    >
+                      <h3 className={`${DISPLAY} mb-5 flex items-center gap-3 text-2xl font-bold text-[#0F1B2D]`}>
+                        <SkillIcon className="text-[#1D4ED8]" /> {skill.titre}
+                      </h3>
+                      <ul className="space-y-3">
+                        {skill.items.map((it, j) => (
+                          <motion.li
+                            key={it} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 + j * 0.07, duration: 0.4, ease: EASE }}
+                            whileHover={{ x: 6 }}
+                            className="flex items-center gap-3 text-lg"
+                          >
+                            <CheckCircle2 size={18} className="shrink-0 text-[#1D4ED8]" /> {it}
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </Reveal>
+            </section>
+
             {/* Projets */}
-            <section className="pb-20">
+            <section className="pb-24">
               <SectionTitle id="projets">Projets</SectionTitle>
               <div className="space-y-6">
-                {d.projets.map((p) => (
-                  <article key={p.id} className="rounded-xl border border-[#DCE4F2] bg-white p-6 md:p-8">
-                    <h3 className={`${DISPLAY} text-xl font-bold text-[#0F1B2D]`}>{p.titre}</h3>
-                    <p className="mt-2 leading-relaxed">{p.description}</p>
-                    <div className="mt-4 flex flex-wrap gap-2">{p.tech.map((t) => <Tag key={t}>{t}</Tag>)}</div>
-                    <div className="mt-5 flex flex-wrap gap-3">
-                      {p.liens.filter((l) => !l.url.includes('...')).map((l) => (
-                        <a key={l.nom} href={l.url} target="_blank" rel="noreferrer"
-                           className={`inline-flex items-center gap-2 rounded-lg border border-[#C9D5EE] px-4 py-2 text-sm font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] ${FOCUS}`}>
-                          {linkIcon(l.type)} {l.nom}
-                        </a>
-                      ))}
-                    </div>
-                  </article>
+                {d.projets.map((p, i) => (
+                  <Reveal key={p.id} delay={i * 0.1}>
+                    <Tilt className="rounded-xl border border-[#DCE4F2] bg-white p-6 md:p-8">
+                      <h3 className={`${DISPLAY} text-xl font-bold text-[#0F1B2D]`}>{p.titre}</h3>
+                      <p className="mt-2 leading-relaxed">{p.description}</p>
+                      <div className="mt-4 flex flex-wrap gap-2">{p.tech.map((t) => <Tag key={t}>{t}</Tag>)}</div>
+                      <div className="mt-5 flex flex-wrap gap-3">
+                        {p.liens.filter((l) => !l.url.includes('...')).map((l) => (
+                          <motion.a key={l.nom} href={l.url} target="_blank" rel="noreferrer" whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }}
+                            className={`inline-flex items-center gap-2 rounded-lg border border-[#C9D5EE] px-4 py-2 text-sm font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] hover:text-[#1D4ED8] ${FOCUS}`}>
+                            {linkIcon(l.type)} {l.nom}
+                          </motion.a>
+                        ))}
+                      </div>
+                    </Tilt>
+                  </Reveal>
                 ))}
               </div>
             </section>
 
             {/* Langues + atouts */}
             <section className="grid gap-12 pb-16 sm:grid-cols-2">
-              <div>
+              <Reveal>
                 <h2 className={`${DISPLAY} mb-4 text-2xl font-bold text-[#0F1B2D]`}>Langues</h2>
                 <ul className="space-y-2">
                   {d.langues.map((l) => (
@@ -346,11 +738,11 @@ const App = () => {
                     </li>
                   ))}
                 </ul>
-              </div>
-              <div>
+              </Reveal>
+              <Reveal delay={0.1}>
                 <h2 className={`${DISPLAY} mb-4 text-2xl font-bold text-[#0F1B2D]`}>Atouts</h2>
                 <div className="flex flex-wrap gap-2">{d.atouts.map((a) => <Tag key={a}>{a}</Tag>)}</div>
-              </div>
+              </Reveal>
             </section>
 
             <footer className="border-t border-[#DCE4F2] pt-6 text-sm">
@@ -360,85 +752,19 @@ const App = () => {
         </main>
       </div>
 
-      {/* ===== Modales ===== */}
+      {/* Modales */}
       <AnimatePresence>
         {modal === 'about' && (
-          <Modal key="about" onClose={close} label="Qui suis-je ?" wide>
-            <div className="md:flex">
-              <div className="h-80 bg-[#DCE4F2] md:h-auto md:w-2/5">
-                <img src={d.aPropos.photos[0]} alt={d.aPropos.nomComplet} className="h-full w-full object-cover object-top" />
-              </div>
-              <div className="p-8 md:w-3/5 md:p-12">
-                <h2 className={`${DISPLAY} text-3xl font-bold text-[#0F1B2D]`}>{d.aPropos.nomComplet}</h2>
-                <dl className="mt-6 grid gap-4 text-sm sm:grid-cols-2">
-                  {[
-                    [<Calendar size={16} />, 'Né le', d.aPropos.naissance],
-                    [<MapPin size={16} />, 'À', d.aPropos.lieu],
-                    [<MapPin size={16} />, 'Habite à', d.aPropos.reside],
-                    [<Globe size={16} />, 'Nationalité', d.aPropos.nationalite],
-                  ].map(([ic, k, v]) => (
-                    <div key={k} className="flex items-start gap-3">
-                      <span className="mt-0.5 text-[#1D4ED8]">{ic}</span>
-                      <div><dt>{k}</dt><dd className="font-semibold text-[#0F1B2D]">{v}</dd></div>
-                    </div>
-                  ))}
-                </dl>
-                <p className="mt-6 text-base leading-relaxed">{d.aPropos.bioLongue}</p>
-                <div className="mt-6 rounded-lg bg-[#E3EAFB] p-5">
-                  <h3 className="font-semibold text-[#0F1B2D]">Ce qui me motive</h3>
-                  <p className="mt-1">{d.aPropos.passion}</p>
-                </div>
-              </div>
-            </div>
+          <Modal key="about" onClose={closeModal} label="Qui suis-je ?" wide>
+            <AboutContent socials={socials} onContact={() => setModal('contact')} />
           </Modal>
         )}
-
         {modal === 'contact' && (
-          <Modal key="contact" onClose={close} label="Me contacter">
+          <Modal key="contact" onClose={closeModal} label="Me contacter">
             <div className="p-8 md:p-10">
               <h2 className={`${DISPLAY} text-3xl font-bold text-[#0F1B2D]`}>Écrivez-moi</h2>
               <p className="mb-6 mt-2">Stage, alternance, projet : décrivez votre besoin en quelques lignes.</p>
-              <ContactForm onDone={close} />
-            </div>
-          </Modal>
-        )}
-
-        {modal?.type === 'exp' && (
-          <Modal key="exp" onClose={close} label={modal.item.entreprise} wide={!!modal.item.photo}>
-            <div className={modal.item.photo ? 'md:flex' : ''}>
-              {modal.item.photo && (
-                <div className="h-64 bg-[#DCE4F2] md:h-auto md:w-2/5">
-                  <img src={modal.item.photo} alt={modal.item.entreprise} className="h-full w-full object-cover" />
-                </div>
-              )}
-              <div className="p-8 md:p-10">
-                <p className="text-sm font-medium text-[#1D4ED8]">{modal.item.periode}</p>
-                <h2 className={`${DISPLAY} mt-1 text-3xl font-bold text-[#0F1B2D]`}>{modal.item.entreprise}</h2>
-                <p className="mt-1 font-medium text-[#0F1B2D]">{modal.item.poste}</p>
-                <p className="mt-5 text-lg leading-relaxed">{modal.item.details}</p>
-                <div className="mt-5 flex flex-wrap gap-2">{modal.item.tags.map((t) => <Tag key={t}>{t}</Tag>)}</div>
-                {modal.item.document && <div className="mt-6"><DocLink href={modal.item.document}>Voir l'attestation</DocLink></div>}
-              </div>
-            </div>
-          </Modal>
-        )}
-
-        {modal?.type === 'form' && (
-          <Modal key="form" onClose={close} label={modal.item.diplome} wide={!!modal.item.photo}>
-            <div className={modal.item.photo ? 'md:flex' : ''}>
-              {modal.item.photo && (
-                <div className="h-64 bg-[#DCE4F2] md:h-auto md:w-2/5">
-                  <img src={modal.item.photo} alt={`Diplôme : ${modal.item.diplome}`} className="h-full w-full object-cover" />
-                </div>
-              )}
-              <div className="p-8 md:p-10">
-                <p className="text-sm font-medium text-[#1D4ED8]">{modal.item.periode}</p>
-                <h2 className={`${DISPLAY} mt-1 text-2xl font-bold text-[#0F1B2D]`}>{modal.item.diplome}</h2>
-                <p className="mt-1">{modal.item.option}</p>
-                <p className="mt-5 text-lg leading-relaxed">{modal.item.details}</p>
-                <p className="mt-5 flex items-center gap-2 text-sm"><MapPin size={14} /> {modal.item.etablissement}</p>
-                {modal.item.document && <div className="mt-6"><DocLink href={modal.item.document}>Voir le diplôme (PDF)</DocLink></div>}
-              </div>
+              <ContactForm onDone={closeModal} />
             </div>
           </Modal>
         )}
