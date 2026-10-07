@@ -3,7 +3,7 @@ import { Server, Code2, ShieldCheck, GraduationCap, Briefcase, Zap, Globe, Award
 export const portfolioData = {
   profil: {
     prenom: "Marsouk",
-    nom: "BIAOU",
+    nom: "BIAO",
     titre: "Administrateur Réseaux & Développeur Fullstack",
     description: "Titulaire d’une Licence en Informatique de Gestion. Passionné par la conception, l’administration et la sécurisation des systèmes d’information.",
     cvLink: "cv-marsouk.pdf", // Remplace par le nom de ton fichier PDF dans le dossier public/
