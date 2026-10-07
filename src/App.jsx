@@ -7,7 +7,7 @@ import {
   Linkedin, Mail, X, Download, Server, Code2, Database, Workflow, PenTool,
   MapPin, Calendar, Globe, Github, HardDrive, ExternalLink, FileText,
   MessageCircle, Facebook, GraduationCap, Phone, ChevronDown, CheckCircle2,
-  Quote, Languages, Sparkles,
+  Quote, Languages, Sparkles, Target, ArrowRight, Briefcase, Award,
 } from 'lucide-react';
 import { portfolioData as d } from './data/portfolioData';
 
@@ -16,17 +16,23 @@ const DISPLAY = "font-['Bricolage_Grotesque',sans-serif]";
 const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1D4ED8]';
 const EASE = [0.22, 1, 0.36, 1];
 
+const OBJECTIF_TYPES = ['Stage', 'Alternance', 'CDD', 'CDI'];
+
 const IconMap = { Server, Code2, Database, Workflow, PenTool };
 const linkIcon = (t) =>
   ({ github: <Github size={15} />, drive: <HardDrive size={15} />, web: <Globe size={15} /> }[t] || <ExternalLink size={15} />);
 
 const NAV = [
   ['top', 'Accueil'],
+  ['objectif', 'Objectif actuel'],
   ['parcours', 'Parcours'],
   ['experiences', 'Expériences'],
   ['competences', 'Compétences'],
+  ['certifications', 'Certifications'],
   ['projets', 'Projets'],
-];
+].filter(([id]) =>
+  (id !== 'objectif' || d.objectif?.actif) && (id !== 'certifications' || d.certifications?.length > 0));
+const NAV_IDS = NAV.map(([id]) => id);
 
 const goTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -208,14 +214,14 @@ const Modal = ({ onClose, label, wide, children }) => {
     >
       {/* Fond défilant */}
       <div
-        className="absolute inset-0 flex items-start justify-center overflow-y-auto bg-[#0F1B2D]/70 p-4 backdrop-blur-sm md:items-center"
+        className="absolute inset-0 flex overflow-y-auto bg-[#0F1B2D]/70 p-4 backdrop-blur-sm md:px-8 md:py-6"
         onClick={onClose}
       >
         <motion.div
           role="dialog" aria-modal="true" aria-label={label} onClick={(e) => e.stopPropagation()}
           initial={{ y: 40, opacity: 0, scale: 0.97 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 40, opacity: 0, scale: 0.97 }}
           transition={{ duration: 0.4, ease: EASE }}
-          className={`relative my-8 w-full overflow-hidden rounded-2xl bg-white text-[#1C2D47] shadow-2xl ${wide ? 'max-w-5xl' : 'max-w-2xl'}`}
+          className={`relative m-auto w-full overflow-hidden rounded-2xl bg-white text-[#1C2D47] shadow-2xl ${wide ? 'max-w-5xl' : 'max-w-2xl'}`}
         >
           {children}
         </motion.div>
@@ -445,8 +451,102 @@ const AboutContent = ({ onContact, socials }) => {
   );
 };
 
+/* ---------- Objectif actuel ---------- */
+const ObjectiveBadge = () => (
+  <span className="inline-flex items-center gap-2 rounded-full bg-[#E3EAFB] px-3.5 py-1.5 text-sm font-semibold text-[#1D4ED8]">
+    <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
+      <span className="absolute inline-flex h-full w-full rounded-full bg-[#4ADE80] opacity-75 motion-safe:animate-ping" />
+      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#22C55E]" />
+    </span>
+    {d.objectif.statut} · {d.objectif.types.join(' / ')}
+  </span>
+);
+
+const ObjectiveDetails = () => {
+  const o = d.objectif;
+  const rows = [
+    [<Calendar size={16} />, 'Disponibilité', o.disponibilite],
+    [<Briefcase size={16} />, 'Rythme', o.rythme],
+    [<MapPin size={16} />, 'Lieu', o.lieu],
+  ].filter(([, , v]) => v);
+  return (
+    <>
+      <dl className="mt-5 grid gap-3 sm:grid-cols-3">
+        {rows.map(([ic, k, v]) => (
+          <div key={k} className="rounded-lg bg-[#F1F4F8] p-3.5">
+            <dt className="flex items-center gap-1.5 text-xs text-[#52607A]">{ic} {k}</dt>
+            <dd className="mt-1 font-semibold text-[#0F1B2D]">{v}</dd>
+          </div>
+        ))}
+      </dl>
+      {o.domaines?.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">{o.domaines.map((x) => <Tag key={x}>{x}</Tag>)}</div>
+      )}
+    </>
+  );
+};
+
+const Welcome = ({ onContinue, onContact }) => {
+  const o = d.objectif;
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e) => e.key === 'Escape' && onContinue();
+    window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+  }, [onContinue]);
+
+  return (
+    <motion.div
+      role="dialog" aria-modal="true" aria-labelledby="welcome-title"
+      className="fixed inset-0 z-[100] flex overflow-y-auto bg-[radial-gradient(circle_at_20%_15%,#1C2D47,#0F1B2D_65%)] p-4 md:p-8"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.5 } }}
+    >
+      <motion.div
+        initial={{ y: 40, opacity: 0, scale: 0.96 }} animate={{ y: 0, opacity: 1, scale: 1 }}
+        exit={{ y: -30, opacity: 0, scale: 0.97 }} transition={{ duration: 0.6, ease: EASE }}
+        className="m-auto w-full max-w-2xl rounded-2xl bg-white p-7 text-[#1C2D47] shadow-2xl md:p-10"
+      >
+        <motion.div variants={stagger} initial="hidden" animate="show">
+          <motion.p variants={rise} className="flex items-center gap-2 text-sm font-medium text-[#1D4ED8]">
+            <Sparkles size={16} /> Bienvenue sur mon portfolio
+          </motion.p>
+          <motion.h2 variants={rise} id="welcome-title" className={`${DISPLAY} mt-2 text-3xl font-bold leading-tight text-[#0F1B2D] md:text-4xl`}>
+            Je suis {d.profil.prenom} {d.profil.nom}
+          </motion.h2>
+          <motion.p variants={rise} className="mt-1 text-[#52607A]">{d.profil.titre}</motion.p>
+
+          <motion.div variants={rise} className="mt-7 rounded-xl border border-[#C9D5EE] p-5 md:p-6">
+            <ObjectiveBadge />
+            <h2 className={`${DISPLAY} mt-4 text-2xl font-bold text-[#0F1B2D]`}>{o.intitule}</h2>
+            <p className="mt-2 leading-relaxed text-[#0F1B2D]">{o.details}</p>
+            <ObjectiveDetails />
+            {o.misAJour && <p className="mt-4 text-xs text-[#52607A]">Mis à jour : {o.misAJour}</p>}
+          </motion.div>
+
+          <motion.div variants={rise} className="mt-7 flex flex-wrap gap-3">
+            <motion.button
+              autoFocus onClick={onContinue} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
+              className={`inline-flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-6 py-3.5 font-semibold text-white hover:bg-[#1A43B8] ${FOCUS}`}
+            >
+              Continuer <ArrowRight size={18} />
+            </motion.button>
+            <motion.button
+              onClick={onContact} whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
+              className={`rounded-lg border border-[#C9D5EE] px-6 py-3.5 font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] ${FOCUS}`}
+            >
+              Me contacter
+            </motion.button>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 /* ---------- App ---------- */
 const App = () => {
+  const [welcome, setWelcome] = useState(!!d.objectif?.actif);
   const [menuOpen, setMenuOpen] = useState(false);
   const [modal, setModal] = useState(null); // 'about' | 'contact'
   const [openForm, setOpenForm] = useState('miage');
@@ -454,7 +554,8 @@ const App = () => {
   const [tab, setTab] = useState(0);
 
   const closeModal = useCallback(() => setModal(null), []);
-  const active = useActiveSection(NAV.map(([id]) => id));
+  const closeWelcome = useCallback(() => setWelcome(false), []);
+  const active = useActiveSection(NAV_IDS);
 
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 24 });
@@ -547,6 +648,19 @@ const App = () => {
               >
                 <GraduationCap size={16} /> {d.profil.statut}
               </motion.p>
+              {d.objectif.actif && (
+                <motion.button
+                  initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.6, ease: EASE }}
+                  whileHover={{ y: -2 }} onClick={() => goTo('objectif')}
+                  className={`mb-5 ml-0 mr-2 inline-flex items-center gap-2 rounded-full bg-[#0F1B2D] px-4 py-1.5 text-sm font-medium text-white shadow-sm sm:ml-2 ${FOCUS}`}
+                >
+                  <span className="relative flex h-2.5 w-2.5">
+                    <motion.span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400" animate={{ scale: [1, 2.2], opacity: [0.7, 0] }} transition={{ repeat: Infinity, duration: 1.6 }} />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                  </span>
+                  {d.objectif.statut} : {d.objectif.types.join(' / ')}
+                </motion.button>
+              )}
               <h1 className={`${DISPLAY} text-4xl font-bold leading-[1.15] tracking-tight text-[#0F1B2D] md:text-6xl`}>
                 {words.map((w, i) => (
                   <span key={i} className="mr-[0.25em] inline-block overflow-hidden pb-1 align-bottom">
@@ -578,6 +692,80 @@ const App = () => {
               </motion.div>
               <div className="mt-12"><Topology /></div>
             </section>
+
+            {/* Objectif actuel */}
+            {d.objectif.actif && (
+              <section className="pb-24">
+                <SectionTitle id="objectif">Objectif actuel</SectionTitle>
+                <Reveal>
+                  <div className="relative overflow-hidden rounded-2xl bg-[#0F1B2D] p-6 text-white md:p-10">
+                    <motion.div
+                      aria-hidden="true" className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#1D4ED8]/40 blur-3xl"
+                      animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
+                    />
+                    <div className="relative">
+                      <p className="inline-flex items-center gap-2 text-sm font-medium text-[#9DB8FF]">
+                        <span className="relative flex h-2.5 w-2.5">
+                          <motion.span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400" animate={{ scale: [1, 2.4], opacity: [0.7, 0] }} transition={{ repeat: Infinity, duration: 1.6 }} />
+                          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                        </span>
+                        <Target size={16} /> {d.objectif.statut}
+                      </p>
+                      <h3 className={`${DISPLAY} mt-3 text-2xl font-bold leading-tight md:text-4xl`}>{d.objectif.intitule}</h3>
+
+                      <div className="mt-5 flex flex-wrap gap-2" aria-label="Types de contrat recherchés">
+                        {OBJECTIF_TYPES.map((t) => {
+                          const on = d.objectif.types.includes(t);
+                          return (
+                            <motion.span
+                              key={t} whileHover={{ y: -2 }}
+                              className={`rounded-full px-4 py-1.5 text-sm font-semibold ${on ? 'bg-white text-[#0F1B2D]' : 'border border-white/20 text-slate-400'}`}
+                            >
+                              {on && <CheckCircle2 size={14} className="mr-1.5 inline text-[#1D4ED8]" aria-hidden="true" />}
+                              {t}
+                            </motion.span>
+                          );
+                        })}
+                      </div>
+
+                      <p className="mt-5 max-w-2xl leading-relaxed text-slate-200">{d.objectif.details}</p>
+
+                      <dl className="mt-6 grid gap-3 sm:grid-cols-3">
+                        {[
+                          [<Calendar size={16} />, 'Disponibilité', d.objectif.disponibilite],
+                          [<Briefcase size={16} />, 'Rythme', d.objectif.rythme],
+                          [<MapPin size={16} />, 'Lieu', d.objectif.lieu],
+                        ].filter(([, , v]) => v).map(([ic, k, v]) => (
+                          <motion.div key={k} whileHover={{ y: -3 }} className="rounded-lg bg-white/10 p-4">
+                            <dt className="flex items-center gap-2 text-xs text-[#9DB8FF]">{ic} {k}</dt>
+                            <dd className="mt-1 font-semibold text-white">{v}</dd>
+                          </motion.div>
+                        ))}
+                      </dl>
+
+                      {d.objectif.domaines?.length > 0 && (
+                        <div className="mt-6 flex flex-wrap gap-2">
+                          {d.objectif.domaines.map((x) => (
+                            <span key={x} className="rounded-md bg-[#1D4ED8]/40 px-2.5 py-1 text-xs font-medium text-[#DCE6FF]">{x}</span>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="mt-8 flex flex-wrap gap-3">
+                        <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={() => setModal('contact')}
+                          className={`rounded-lg bg-white px-5 py-3 font-semibold text-[#0F1B2D] hover:bg-[#E3EAFB] ${FOCUS}`}>
+                          Me proposer une opportunité
+                        </motion.button>
+                        <motion.a whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} href={d.profil.cvLink} download="CV_Marsouk_Biaou.pdf"
+                          className={`inline-flex items-center gap-2 rounded-lg border border-white/25 px-5 py-3 font-semibold text-white hover:bg-white/10 ${FOCUS}`}>
+                          <Download size={18} /> Télécharger mon CV
+                        </motion.a>
+                      </div>
+                    </div>
+                  </div>
+                </Reveal>
+              </section>
+            )}
 
             {/* Parcours */}
             <section className="pb-24">
@@ -703,6 +891,35 @@ const App = () => {
               </Reveal>
             </section>
 
+            {/* Certifications */}
+            {d.certifications?.length > 0 && (
+              <section className="pb-24">
+                <SectionTitle id="certifications">Certifications</SectionTitle>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {d.certifications.map((c, i) => (
+                    <Reveal key={c.intitule} delay={i * 0.08}>
+                      <motion.div
+                        whileHover={{ y: -4, boxShadow: '0 18px 40px -18px rgba(29,78,216,.45)' }}
+                        className="flex h-full flex-col rounded-xl border border-[#DCE4F2] bg-white p-6"
+                      >
+                        <span className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[#E3EAFB] text-[#1D4ED8]">
+                          <Award size={22} />
+                        </span>
+                        <h3 className={`${DISPLAY} text-lg font-bold text-[#0F1B2D]`}>{c.intitule}</h3>
+                        <p className="mt-1 text-sm">{[c.organisme, c.date].filter(Boolean).join(' · ')}</p>
+                        {c.document && (
+                          <a href={c.document} target="_blank" rel="noreferrer"
+                             className={`mt-auto inline-flex items-center gap-2 pt-4 text-sm font-semibold text-[#1D4ED8] hover:underline ${FOCUS}`}>
+                            <FileText size={15} /> Voir le certificat
+                          </a>
+                        )}
+                      </motion.div>
+                    </Reveal>
+                  ))}
+                </div>
+              </section>
+            )}
+
             {/* Projets */}
             <section className="pb-24">
               <SectionTitle id="projets">Projets</SectionTitle>
@@ -751,6 +968,12 @@ const App = () => {
           </div>
         </main>
       </div>
+
+      <AnimatePresence>
+        {welcome && (
+          <Welcome key="welcome" onContinue={closeWelcome} onContact={() => { setWelcome(false); setModal('contact'); }} />
+        )}
+      </AnimatePresence>
 
       {/* Modales */}
       <AnimatePresence>

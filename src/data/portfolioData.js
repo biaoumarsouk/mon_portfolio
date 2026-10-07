@@ -13,6 +13,26 @@ export const portfolioData = {
     cvLink: "/cv-marsouk.pdf", // fichier à placer dans public/
   },
 
+  // ============================================================
+  // OBJECTIF ACTUEL : c'est ici que tu changes ton objectif à tout moment.
+  // - actif: false  → la rubrique et le badge disparaissent du site
+  // - types: un ou plusieurs parmi "Stage", "Alternance", "CDD", "CDI"
+  // Tout le reste est du texte libre. Les valeurs ci-dessous sont des exemples.
+  // ============================================================
+  objectif: {
+    actif: true,
+    statut: "Recherche active",
+    types: ["Alternance"],
+    intitule: "À la recherche d'une alternance en systèmes d'information et data",
+    details:
+      "Étudiant en L3 MIAGE, je cherche une entreprise pour mettre en pratique la conception de systèmes d'information, les bases de données et le développement, tout en préparant le Master MIAGE parcours DABI.",
+    disponibilite: "À définir",
+    rythme: "À définir",
+    lieu: "Rennes et alentours, ou à distance",
+    domaines: ["Systèmes d'information", "Data et BI", "Développement web et mobile"],
+    misAJour: "Octobre 2026", // affiché dans la fenêtre d'accueil (laisse vide "" pour le masquer)
+  },
+
   aPropos: {
     nomComplet: "BIAOU Malomon Abdou Marsouk",
     naissance: "19 février 2005",
@@ -57,6 +77,16 @@ export const portfolioData = {
   ],
 
   experiences: [
+    {
+      id: 4,
+      entreprise: "Ford High Tech",
+      poste: "Stage professionnel · Développement web et mobile",
+      periode: "6 mois · attestation du 24 juillet 2026", // À VÉRIFIER : remplace par tes dates exactes (ex. « Février – juillet 2026 »)
+      details:
+        "Stage professionnel de six mois axé sur la conception et le développement d'applications web et mobiles. Analyse des besoins des utilisateurs et mise en œuvre de solutions techniques adaptées.",
+      tags: ["Applications web", "Applications mobiles", "Analyse des besoins"],
+      document: "/attestation-ford-high-tech.pdf", // fichier à placer dans public/
+    },
     {
       id: 1,
       entreprise: "UST Bénin",
@@ -122,6 +152,25 @@ export const portfolioData = {
       periode: "2021 – 2022",
       document: "https://drive.google.com/file/d/1JxaEjIVSXbQFx1hE0IjI-pZ-PLto-DeM/view?usp=drive_link",
     },
+  ],
+
+  // ====== CERTIFICATIONS ======
+  // Tant que la liste est vide, la rubrique n'apparaît pas sur le site.
+  // Pour en ajouter une, copie ce modèle entre les crochets :
+  // {
+  //   intitule: "Nom de la certification",
+  //   organisme: "Organisme qui l'a délivrée",
+  //   date: "Mois année",
+  //   document: "/certificat-xxx.pdf", // ou lien https:// ; laisse "" s'il n'y en a pas
+  // },
+  certifications: [
+      {
+        intitule: "EXEMPLE : nom de ta certification",
+        organisme: "Organisme (à remplacer)",
+        date: "Mois année",
+        document: "",
+      },
+
   ],
 
   projets: [
