@@ -1,136 +1,159 @@
-import { Server, Code2, ShieldCheck, GraduationCap, Briefcase, Zap, Globe, Award } from 'lucide-react';
+// src/data/portfolioData.js
+// Les lignes marquées "À VÉRIFIER" sont des suppositions de ma part : corrige-les.
 
 export const portfolioData = {
   profil: {
     prenom: "Marsouk",
-    nom: "BIAO",
-    titre: "Administrateur Réseaux & Développeur Fullstack",
-    description: "Titulaire d’une Licence en Informatique de Gestion. Passionné par la conception, l’administration et la sécurisation des systèmes d’information.",
-    cvLink: "cv-marsouk.pdf", // Remplace par le nom de ton fichier PDF dans le dossier public/
+    nom: "BIAOU",
+    titre: "Étudiant en L3 MIAGE · Réseaux & développement",
+    statut: "L3 MIAGE — ISTIC, Université de Rennes",
+    accroche: "Je relie l'infrastructure réseau et les applications qui tournent dessus.",
+    description:
+      "Titulaire d'une Licence en Informatique de Gestion (ENEAM), j'approfondis aujourd'hui les systèmes d'information en L3 MIAGE à l'ISTIC. Je viens de l'administration réseau et je développe des applications web et mobiles.",
+    cvLink: "/cv-marsouk.pdf", // fichier à placer dans public/
   },
 
   aPropos: {
-    nomComplet: "BIAOU Malomon Abdou Marsouk", 
-    naissance: "19 Février 2005", // À modifier
+    nomComplet: "BIAOU Malomon Abdou Marsouk",
+    naissance: "19 février 2005",
     lieu: "Ekpè, Bénin",
-    reside:"Cotonou, Bénin",
+    reside: "Rennes, France", // À VÉRIFIER
     nationalite: "Béninoise",
-    passion: "Conception, administration et sécurisation des systèmes d’information.",
-    bioLongue: "Titulaire d’une Licence en Informatique de Gestion à l'ENEAM, je me spécialise dans l'administration des réseaux. Mon parcours hybride me permet de comprendre aussi bien les infrastructures physiques que le développement d'applications modernes.",
-    photos: ["/ma-photo.jpg"] // Place ta photo dans le dossier public/ sous ce nom
+    passion:
+      "Concevoir des systèmes d'information fiables, de l'infrastructure réseau jusqu'à l'application, en gardant le besoin métier au centre.",
+    bioLongue:
+      "J'ai commencé par l'administration des réseaux à l'ENEAM (Cotonou), avec un projet de sauvegarde automatisée des configurations Cisco noté Très Bien. J'ai aussi développé en React, React Native et Laravel pendant mes stages. Je poursuis en L3 MIAGE à l'ISTIC pour ajouter la conception de systèmes d'information et la gestion de projet à ce socle technique.",
+    photos: ["/ma-photo.jpg"],
   },
 
   competences: [
-    { 
-      titre: "Administration Réseau", 
-      icon: "Server", 
-      items: ["Configuration switches & routeurs", "Pare-feu (Firewalls)", "Infrastructures sécurisées", "Téléphonie IP"] 
+    {
+      titre: "Administration réseau",
+      icon: "Server",
+      items: ["Configuration de switches et routeurs", "Pare-feu", "Infrastructures sécurisées", "Téléphonie IP"],
     },
-    { 
-      titre: "Développement", 
-      icon: "Code2", 
-      items: ["React.js / React Native", "Laravel (PHP)", "Python, Java, C++", "Figma (Design/Prototypage)"] 
+    {
+      titre: "Développement",
+      icon: "Code2",
+      items: ["React.js / React Native", "Laravel (PHP)", "Python, Java, C++", "Figma (design, prototypage)"],
     },
-    { 
-      titre: "Sécurité & Systèmes", 
-      icon: "ShieldCheck", 
-      items: ["Cryptographie", "Admin Linux & Windows", "Sauvegarde automatisée", "Maintenance informatique"] 
-    }
+    {
+      titre: "Sécurité et systèmes",
+      icon: "ShieldCheck",
+      items: ["Cryptographie", "Administration Linux et Windows", "Sauvegarde automatisée", "Maintenance informatique"],
+    },
+    {
+      // À VÉRIFIER : adapte à ce que tu vois réellement en MIAGE
+      titre: "Systèmes d'information",
+      icon: "Workflow",
+      items: ["Analyse et conception de SI", "Bases de données", "Gestion de projet", "Méthodes agiles"],
+    },
   ],
 
   experiences: [
     {
       id: 1,
       entreprise: "UST Bénin",
-      poste: "Stage Académique - Soutenance",
-      periode: "Avril 2025 – Août 2025",
-      details: "Réalisation du projet : 'Conception et déploiement d’un système automatisé de sauvegarde et de restauration des configurations réseau'. Mention Très Bien. Redimensionnement et configuration d'équipements Cisco et pare-feu.",
+      poste: "Stage académique et soutenance",
+      periode: "Avril – août 2025",
+      details:
+        "Projet : « Conception et déploiement d'un système automatisé de sauvegarde et de restauration des configurations réseau ». Mention Très Bien. Dimensionnement et configuration d'équipements Cisco et de pare-feu.",
       tags: ["Cisco", "Sécurité", "Réseau"],
-       photo: "photo-ust.jpg",
-      document: "https://drive.google.com/file/d/1zyi5fRDXnI8OceAKFrAJCJZ9uMNQaUy6/view?usp=drive_link"
+      photo: "/photo-ust.jpg",
+      document: "https://drive.google.com/file/d/1zyi5fRDXnI8OceAKFrAJCJZ9uMNQaUy6/view?usp=drive_link",
     },
     {
       id: 2,
       entreprise: "Inawo Technologies",
-      poste: "Stage Académique - Développeur",
-      periode: "Juin 2024 – Septembre 2024",
-      details: "Contribution au développement du site web (React.js) et de l'application mobile (React Native). Utilisation de Figma pour le prototypage et le design d’applications.",
+      poste: "Stage académique · Développeur",
+      periode: "Juin – septembre 2024",
+      details:
+        "Contribution au site web (React.js) et à l'application mobile (React Native). Prototypage et design des écrans avec Figma.",
       tags: ["React", "React Native", "Figma"],
       photo: "/photo-inawo.jpg",
-      document: "https://drive.google.com/file/d/1EzBTnPtYKT2xpWvZH5o3zfGAdMeEKjFq/view?usp=drive_link"
+      document: "https://drive.google.com/file/d/1EzBTnPtYKT2xpWvZH5o3zfGAdMeEKjFq/view?usp=drive_link",
     },
     {
       id: 3,
       entreprise: "Maelan Technology",
-      poste: "Stage Académique - Développeur Web",
-      periode: "Avril 2024 – Juin 2024",
-      details: "Réalisation en équipe de la refonte du site de l’ONG ADNA. Utilisation du framework Laravel, travail collaboratif et mutualisation des efforts.",
+      poste: "Stage académique · Développeur web",
+      periode: "Avril – juin 2024",
+      details:
+        "Refonte en équipe du site de l'ONG ADNA avec le framework Laravel, en travail collaboratif.",
       tags: ["Laravel", "PHP", "Agile"],
       photo: "/photo-maelan.jpg",
-      document: "https://drive.google.com/file/d/1PAU6nnVCPsCUn-w0UvrzQxh9SYSyfp2Y/view?usp=drive_link"
-    }
+      document: "https://drive.google.com/file/d/1PAU6nnVCPsCUn-w0UvrzQxh9SYSyfp2Y/view?usp=drive_link",
+    },
   ],
 
   formations: [
     {
-      id: "licence", // On ajoute un ID pour le reconnaître
-      diplome: "Licence Professionnelle en Informatique de Gestion",
-      option: "Administration des Réseaux Informatiques",
-      etablissement: "ENEAM, Cotonou, Bénin",
-      periode: "2022 - 2025",
-      // AJOUTE CECI :
-      photo: "/photo-diplome-Licence.jpg", // Mets ta photo dans le dossier public/
-      document: "https://drive.google.com/file/d/1z9HKwu7k_YO2rvJmT9VImBLQHsNEstpp/view?usp=drive_link",
-      details: "Ma formation à l'ENEAM m'a permis d'acquérir une expertise solide en administration système et réseau. Ma soutenance portait sur l'automatisation des sauvegardes et restaurations des configurations réseau (Mention Très Bien). J'y ai appris la gestion des infrastructures réseaux, la sécurité informatique et le déploiement de serveurs Linux/Windows."
+      id: "miage",
+      diplome: "Licence 3 MIAGE",
+      option: "Méthodes informatiques appliquées à la gestion des entreprises",
+      etablissement: "ISTIC, Université de Rennes, France",
+      periode: "2026 – en cours", // À VÉRIFIER
+      enCours: true,
     },
     {
+      id: "licence",
+      diplome: "Licence professionnelle en Informatique de Gestion",
+      option: "Administration des réseaux informatiques",
+      etablissement: "ENEAM, Cotonou, Bénin",
+      periode: "2022 – 2025",
+      photo: "/photo-diplome-Licence.jpg",
+      document: "https://drive.google.com/file/d/1z9HKwu7k_YO2rvJmT9VImBLQHsNEstpp/view?usp=drive_link",
+      details:
+        "Formation solide en administration système et réseau. Soutenance sur l'automatisation des sauvegardes et restaurations des configurations réseau (Mention Très Bien). Gestion d'infrastructures réseau, sécurité informatique et déploiement de serveurs Linux et Windows.",
+    },
+    {
+      id: "bac",
       diplome: "Baccalauréat, série D",
-      option: "Enseignement Général",
+      option: "Enseignement général",
       etablissement: "Les Petites Âmes, Cotonou, Bénin",
-      periode: "2021 - 2022",
-      document: "https://drive.google.com/file/d/1JxaEjIVSXbQFx1hE0IjI-pZ-PLto-DeM/view?usp=drive_link"
-      // Pas de détails pour le BAC, donc pas de bouton "Détails"
-    }
+      periode: "2021 – 2022",
+      document: "https://drive.google.com/file/d/1JxaEjIVSXbQFx1hE0IjI-pZ-PLto-DeM/view?usp=drive_link",
+    },
   ],
 
   projets: [
     {
       id: 1,
-      titre: "Système d'Automatisation Réseau",
-      description: "Script Python pour la sauvegarde automatique des configurations de switches Cisco et l'envoi de rapports par email.",
+      titre: "Système d'automatisation réseau",
+      description:
+        "Script Python qui sauvegarde automatiquement les configurations de switches Cisco et envoie un rapport par email.",
       tech: ["Python", "Paramiko", "Netmiko"],
-      image: "/projet-reseau.jpg", // Optionnel
       liens: [
-        { nom: "GitHub", url: "https://github.com/...", type: "github" },
-        { nom: "Documentation", url: "https://drive.google.com/...", type: "drive" }
-      ]
+        { nom: "GitHub", url: "https://github.com/...", type: "github" }, // liens contenant "..." sont masqués
+        { nom: "Documentation", url: "https://drive.google.com/...", type: "drive" },
+      ],
     },
     {
       id: 2,
-      titre: "Application E-commerce Inawo",
-      description: "Développement d'une interface moderne pour la vente en ligne avec gestion du panier et paiements sécurisés.",
+      titre: "Application e-commerce Inawo",
+      description:
+        "Interface de vente en ligne avec gestion du panier et paiements sécurisés.",
       tech: ["React.js", "Tailwind CSS", "Node.js"],
-      image: "/projet-web.jpg",
       liens: [
-        { nom: "Site Web", url: "https://inawo.com", type: "web" },
-        { nom: "Code Source", url: "https://github.com/...", type: "github" }
-      ]
-    }
+        { nom: "Site web", url: "https://inawo.com", type: "web" },
+        { nom: "Code source", url: "https://github.com/...", type: "github" },
+      ],
+    },
   ],
 
-  atouts: ["Créatif et innovant", "Solutionneur de problèmes", "Apprentissage rapide", " Esprit d’équipe et collaboration"],
+  atouts: ["Créatif et innovant", "Résolution de problèmes", "Apprentissage rapide", "Esprit d'équipe"],
 
   contact: {
     email: "biaoumarsouk@gmail.com",
     telephone: "+229 01 57 77 53 08",
-    localisation: "Cotonou, Bénin",
+    localisation: "Rennes, France", // À VÉRIFIER
     linkedin: "https://bj.linkedin.com/in/marsouk-biaou-698198324",
     whatsapp: "https://wa.me/2290157775308",
-    facebook: "https://www.facebook.com/share/18Dwckaxwb/?mibextid=wwXIfr"
+    facebook: "https://www.facebook.com/share/18Dwckaxwb/?mibextid=wwXIfr",
   },
-  
+
   langues: [
     { nom: "Français", niveau: "Courant" },
-    { nom: "Anglais", niveau: "Intermédiaire" }
-  ]
+    { nom: "Anglais", niveau: "Intermédiaire" },
+  ],
 };
