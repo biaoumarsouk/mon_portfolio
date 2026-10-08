@@ -82,6 +82,24 @@ export const portfolioData = {
     misAJour: "Octobre 2026", // affiché dans la fenêtre d'accueil (laisse vide "" pour le masquer)
   },
 
+  objectiffalse: {
+    actif: false,
+    statut: "Recherche active",
+    types: ["Alternance"],
+    intitule: "À la recherche d'une alternance en Data & Business Intelligence",
+    details:
+      "En fin de formation en L3 MIAGE à l'ISTIC, je recherche une alternance en Data & Business Intelligence pour poursuivre en Master DABI.",
+    disponibilite: "À partir de septembre 2027",
+    rythme: "Alternance",
+    lieu: "Rennes et alentours, ou à distance",
+    domaines: [
+      "Data & Business Intelligence",
+      "Analyse de données",
+      "Systèmes d'information"
+    ],
+    misAJour: "Octobre 2026",
+  },
+
   aPropos: {
     nomComplet: "BIAOU Malomon Abdou Marsouk",
     naissance: "19 février 2005",
@@ -241,6 +259,32 @@ export const portfolioData = {
     },
   ],
 
+  perspectives: [
+    {
+      id: "data",
+      titre: "Data & Business Intelligence",
+      sousTitre: "Transformer les données en décisions",
+      description: "Approfondir l’analyse de données, la visualisation et la Business Intelligence afin de produire des indicateurs utiles à la prise de décision.",
+      icon: "BarChart3",
+      tags: ["SQL", "Python", "Power BI", "Excel"],
+    },
+    {
+      id: "ia",
+      titre: "Intelligence artificielle",
+      sousTitre: "Développer progressivement mon expertise en IA",
+      description: "Développer mes compétences en intelligence artificielle et en machine learning pour intégrer progressivement des solutions intelligentes aux systèmes d’information.",
+      icon: "BrainCircuit",
+      tags: ["Python", "Machine Learning", "IA générative", "Data"],
+    },
+    {
+      id: "systemes-intelligents",
+      titre: "Systèmes intelligents",
+      sousTitre: "Data + IA + Systèmes d'information",
+      description: "À terme, concevoir des systèmes capables d’exploiter les données et l’intelligence artificielle pour automatiser certaines tâches et accompagner la prise de décision.",
+      icon: "Sparkles",
+      tags: ["IA", "Data", "Automatisation", "SI"],
+    },
+  ],
   atouts: ["Créatif et innovant", "Résolution de problèmes", "Apprentissage rapide", "Esprit d'équipe"],
 
   contact: {

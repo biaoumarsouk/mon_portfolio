@@ -30,6 +30,7 @@ const NAV = [
   ['competences', 'Compétences'],
   ['certifications', 'Certifications'],
   ['projets', 'Projets'],
+  ['perspectives', 'Perspectives'],
 ].filter(([id]) =>
   (id !== 'objectif' || d.objectif?.actif) && (id !== 'certifications' || d.certifications?.length > 0));
 const NAV_IDS = NAV.map(([id]) => id);
@@ -1230,6 +1231,60 @@ const App = () => {
                       </Tilt>
                     </Reveal>
                   ))}
+                </div>
+              </section>
+              {/* Perspectives */}
+              <section className="pb-24">
+                <SectionTitle id="perspectives">Perspectives</SectionTitle>
+
+                <div className="mb-10 max-w-3xl">
+                  <p className="text-lg leading-relaxed text-[#52607A]">
+                    Mon évolution s’inscrit dans une trajectoire progressive :
+                    systèmes d’information, Data & Business Intelligence, puis
+                    intelligence artificielle et systèmes intelligents.
+                  </p>
+                </div>
+
+                <div className="grid gap-5 md:grid-cols-3">
+                  {d.perspectives.map((p, i) => {
+                    const Icon = IconMap[p.icon] || Sparkles;
+
+                    return (
+                      <Reveal key={p.id} delay={i * 0.08}>
+                        <motion.article
+                          whileHover={{ y: -6 }}
+                          transition={{ duration: 0.25 }}
+                          className="group h-full rounded-2xl border border-[#C9D5EE] bg-white p-6 shadow-sm"
+                        >
+                          <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#E3EAFB] text-[#1D4ED8]">
+                            <Icon size={24} />
+                          </div>
+
+                          <span className="text-xs font-semibold uppercase tracking-wider text-[#1D4ED8]">
+                            {i === 0 ? "Prochaine étape" : i === 1 ? "Évolution" : "À terme"}
+                          </span>
+
+                          <h3 className={`${DISPLAY} mt-2 text-xl font-bold text-[#0F1B2D]`}>
+                            {p.titre}
+                          </h3>
+
+                          <p className="mt-1 text-sm font-medium text-[#52607A]">
+                            {p.sousTitre}
+                          </p>
+
+                          <p className="mt-4 leading-relaxed text-[#52607A]">
+                            {p.description}
+                          </p>
+
+                          <div className="mt-5 flex flex-wrap gap-2">
+                            {p.tags.map((tag) => (
+                              <Tag key={tag}>{tag}</Tag>
+                            ))}
+                          </div>
+                        </motion.article>
+                      </Reveal>
+                    );
+                  })}
                 </div>
               </section>
 
