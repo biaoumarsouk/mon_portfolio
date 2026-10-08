@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   motion, AnimatePresence, MotionConfig,
   useScroll, useSpring, useTransform, useMotionValue,
@@ -110,18 +110,128 @@ const Tag = ({ children }) => (
   </motion.span>
 );
 
-const DocLink = ({ href, children }) => (
-  <motion.a
-    href={href} target="_blank" rel="noreferrer" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
-    className={`inline-flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1A43B8] ${FOCUS}`}
-  >
-    <FileText size={16} /> {children}
-  </motion.a>
-);
-
 const Photo = ({ src, alt }) => (
   <img src={src} alt={alt} onError={(e) => { e.currentTarget.style.display = 'none'; }}
        className="h-44 w-full rounded-lg bg-[#DCE4F2] object-cover md:h-full md:w-48" />
+);
+
+/* ---------- Confirmation avant téléchargement / redirection ---------- */
+const ConfirmContext = createContext(() => {});
+const useConfirm = () => useContext(ConfirmContext);
+
+const destinationName = (url) => {
+  try {
+    const h = new URL(url).hostname.replace('www.', '');
+    if (h.includes('drive.google')) return 'Google Drive';
+    if (h.includes('github')) return 'GitHub';
+    if (h.includes('play.google')) return 'Google Play Store';
+    if (h.includes('apps.apple')) return 'l’App Store';
+    if (h.includes('figma')) return 'Figma';
+    return h;
+  } catch { return 'un site externe'; }
+};
+
+/* Lien externe : demande confirmation avant de rediriger */
+const ExtLink = ({ href, className, children }) => {
+  const ask = useConfirm();
+  return (
+    <motion.button
+      type="button" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
+      onClick={() => ask({ kind: 'link', href, name: destinationName(href) })}
+      className={className}
+    >
+      {children}
+    </motion.button>
+  );
+};
+
+/* Bouton CV : demande confirmation avant de télécharger */
+const CvButton = ({ className, children }) => {
+  const ask = useConfirm();
+  return (
+    <motion.button
+      type="button" whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
+      onClick={() => ask({ kind: 'download', href: d.profil.cvLink, filename: 'CV_Marsouk_Biaou.pdf' })}
+      className={className}
+    >
+      {children}
+    </motion.button>
+  );
+};
+
+const ConfirmDialog = ({ request, onClose }) => {
+  const isDownload = request.kind === 'download';
+
+  useEffect(() => {
+    // Phase de capture : Échap ferme uniquement cette confirmation, pas la modale en dessous
+    const onKey = (e) => {
+      if (e.key === 'Escape') { e.stopPropagation(); onClose(); }
+    };
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
+  }, [onClose]);
+
+  const confirm = () => {
+    if (isDownload) {
+      const a = document.createElement('a');
+      a.href = request.href;
+      a.download = request.filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } else {
+      window.open(request.href, '_blank', 'noopener,noreferrer');
+    }
+    onClose();
+  };
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-[#0F1B2D]/70 p-4 backdrop-blur-sm"
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
+    >
+      <motion.div
+        role="alertdialog" aria-modal="true" aria-labelledby="confirm-title"
+        onClick={(e) => e.stopPropagation()}
+        initial={{ y: 24, opacity: 0, scale: 0.96 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 24, opacity: 0 }}
+        transition={{ duration: 0.3, ease: EASE }}
+        className="w-full max-w-md rounded-2xl bg-white p-7 text-[#1C2D47] shadow-2xl"
+      >
+        <span className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[#E3EAFB] text-[#1D4ED8]">
+          {isDownload ? <Download size={22} /> : <ExternalLink size={22} />}
+        </span>
+        <h2 id="confirm-title" className={`${DISPLAY} text-xl font-bold text-[#0F1B2D]`}>
+          {isDownload ? 'Télécharger mon CV ?' : 'Vous allez quitter ce site'}
+        </h2>
+        <p className="mt-2 leading-relaxed">
+          {isDownload
+            ? 'Voulez-vous télécharger mon CV (PDF) ?'
+            : `Vous allez être redirigé vers ${request.name} pour accéder à ce contenu. Il s’ouvrira dans un nouvel onglet.`}
+        </p>
+        <div className="mt-6 flex gap-3">
+          <button
+            autoFocus onClick={confirm}
+            className={`flex-1 rounded-lg bg-[#1D4ED8] px-5 py-3 font-semibold text-white hover:bg-[#1A43B8] ${FOCUS}`}
+          >
+            Oui
+          </button>
+          <button
+            onClick={onClose}
+            className={`flex-1 rounded-lg border border-[#C9D5EE] px-5 py-3 font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] ${FOCUS}`}
+          >
+            Non
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+const DocLink = ({ href, children }) => (
+  <ExtLink href={href}
+    className={`inline-flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1A43B8] ${FOCUS}`}>
+    <FileText size={16} /> {children}
+  </ExtLink>
 );
 
 /* ---------- Menu ---------- */
@@ -356,7 +466,7 @@ const AboutContent = ({ onContact, socials }) => {
   const initials = `${d.profil.prenom[0]}${d.profil.nom[0]}`;
   const facts = [
     [<Calendar size={16} />, 'Né le', a.naissance],
-    [<MapPin size={16} />, 'Originaire de', a.lieu],
+    [<MapPin size={16} />, 'Lieu de naissance', a.lieu],
     [<MapPin size={16} />, 'Habite à', a.reside],
     [<Globe size={16} />, 'Nationalité', a.nationalite],
   ];
@@ -437,10 +547,9 @@ const AboutContent = ({ onContact, socials }) => {
         </motion.div>
 
         <motion.div variants={rise} className="mt-8 flex flex-wrap gap-3">
-          <motion.a whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} href={d.profil.cvLink} download="CV_Marsouk_Biaou.pdf"
-            className={`inline-flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-5 py-3 font-semibold text-white hover:bg-[#1A43B8] ${FOCUS}`}>
+          <CvButton className={`inline-flex items-center gap-2 rounded-lg bg-[#1D4ED8] px-5 py-3 font-semibold text-white hover:bg-[#1A43B8] ${FOCUS}`}>
             <Download size={18} /> Télécharger mon CV
-          </motion.a>
+          </CvButton>
           <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={onContact}
             className={`rounded-lg border border-[#C9D5EE] px-5 py-3 font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] ${FOCUS}`}>
             Me contacter
@@ -552,9 +661,11 @@ const App = () => {
   const [openForm, setOpenForm] = useState('miage');
   const [openExp, setOpenExp] = useState(null);
   const [tab, setTab] = useState(0);
+  const [confirm, setConfirm] = useState(null); // { kind, href, name?, filename? }
 
   const closeModal = useCallback(() => setModal(null), []);
   const closeWelcome = useCallback(() => setWelcome(false), []);
+  const closeConfirm = useCallback(() => setConfirm(null), []);
   const active = useActiveSection(NAV_IDS);
 
   const { scrollYProgress } = useScroll();
@@ -590,408 +701,413 @@ const App = () => {
 
   return (
     <MotionConfig reducedMotion="user">
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
+      <ConfirmContext.Provider value={setConfirm}>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
 
-      <motion.div style={{ scaleX: progress }} className="fixed left-0 right-0 top-0 z-[80] h-1 origin-left bg-[#1D4ED8]" />
+        <motion.div style={{ scaleX: progress }} className="fixed left-0 right-0 top-0 z-[80] h-1 origin-left bg-[#1D4ED8]" />
 
-      <MenuButton open={menuOpen} onClick={() => setMenuOpen((o) => !o)} />
-      <AnimatePresence>
-        {menuOpen && (
-          <MenuPanel
-            active={active} onNavigate={navigate} socials={socials}
-            onContact={() => { setMenuOpen(false); setModal('contact'); }}
-          />
-        )}
-      </AnimatePresence>
+        <MenuButton open={menuOpen} onClick={() => setMenuOpen((o) => !o)} />
+        <AnimatePresence>
+          {menuOpen && (
+            <MenuPanel
+              active={active} onNavigate={navigate} socials={socials}
+              onContact={() => { setMenuOpen(false); setModal('contact'); }}
+            />
+          )}
+        </AnimatePresence>
 
-      <div className="min-h-screen bg-[#F1F4F8] font-['IBM_Plex_Sans',sans-serif] text-[#52607A] lg:grid lg:grid-cols-[340px_1fr]">
-        {/* Colonne identité */}
-        <aside className="bg-[#0F1B2D] px-6 pb-8 pt-8 text-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-between lg:px-10 lg:py-12">
-          <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease: EASE }}>
-            <p className={`${DISPLAY} text-3xl font-bold leading-tight`}>{d.profil.prenom}<br />{d.profil.nom}</p>
-            <p className="mt-3 max-w-[16rem] text-sm text-[#9DB8FF]">{d.profil.titre}</p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.7, ease: EASE }}
-            className="mt-8 space-y-5 lg:mt-0"
-          >
-            <ul className="space-y-2 text-sm text-slate-300">
-              <li className="flex items-center gap-2"><MapPin size={15} className="text-[#9DB8FF]" /> {d.contact.localisation}</li>
-              <li className="flex items-center gap-2"><Mail size={15} className="text-[#9DB8FF]" /> {d.contact.email}</li>
-              <li className="flex items-center gap-2"><Phone size={15} className="text-[#9DB8FF]" /> {d.contact.telephone}</li>
-            </ul>
-            <div className="flex gap-2">
-              {socials.map((s) => (
-                <a key={s.label} href={s.href} target="_blank" rel="noreferrer" aria-label={s.label}
-                   className={`rounded-lg border border-white/15 p-2.5 transition hover:-translate-y-1 hover:bg-white hover:text-[#0F1B2D] ${FOCUS}`}>
-                  {s.icon}
-                </a>
-              ))}
-            </div>
-            <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={() => setModal('contact')}
-              className={`w-full rounded-lg bg-white px-4 py-3 font-semibold text-[#0F1B2D] hover:bg-[#E3EAFB] ${FOCUS}`}>
-              Me contacter
-            </motion.button>
-          </motion.div>
-        </aside>
-
-        {/* Contenu */}
-        <main className="px-6 py-14 md:px-12 lg:px-16 lg:py-20">
-          <div className="mx-auto max-w-3xl">
-            {/* Hero */}
-            <section id="top" className="scroll-mt-24 pb-24">
-              <motion.p
-                initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }}
-                className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-medium text-[#1D4ED8] shadow-sm"
-              >
-                <GraduationCap size={16} /> {d.profil.statut}
-              </motion.p>
-              {d.objectif.actif && (
-                <motion.button
-                  initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.6, ease: EASE }}
-                  whileHover={{ y: -2 }} onClick={() => goTo('objectif')}
-                  className={`mb-5 ml-0 mr-2 inline-flex items-center gap-2 rounded-full bg-[#0F1B2D] px-4 py-1.5 text-sm font-medium text-white shadow-sm sm:ml-2 ${FOCUS}`}
-                >
-                  <span className="relative flex h-2.5 w-2.5">
-                    <motion.span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400" animate={{ scale: [1, 2.2], opacity: [0.7, 0] }} transition={{ repeat: Infinity, duration: 1.6 }} />
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                  </span>
-                  {d.objectif.statut} : {d.objectif.types.join(' / ')}
-                </motion.button>
-              )}
-              <h1 className={`${DISPLAY} text-4xl font-bold leading-[1.15] tracking-tight text-[#0F1B2D] md:text-6xl`}>
-                {words.map((w, i) => (
-                  <span key={i} className="mr-[0.25em] inline-block overflow-hidden pb-1 align-bottom">
-                    <motion.span className="inline-block" initial={{ y: '110%' }} animate={{ y: 0 }}
-                      transition={{ duration: 0.7, delay: 0.15 + i * 0.05, ease: EASE }}>
-                      {w}
-                    </motion.span>
-                  </span>
+        <div className="min-h-screen bg-[#F1F4F8] font-['IBM_Plex_Sans',sans-serif] text-[#52607A] lg:grid lg:grid-cols-[340px_1fr]">
+          {/* Colonne identité */}
+          <aside className="bg-[#0F1B2D] px-6 pb-8 pt-8 text-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-between lg:px-10 lg:py-12">
+            <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease: EASE }}>
+              <p className={`${DISPLAY} text-3xl font-bold leading-tight`}>{d.profil.prenom}<br />{d.profil.nom}</p>
+              <p className="mt-3 max-w-[16rem] text-sm text-[#9DB8FF]">{d.profil.titre}</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.7, ease: EASE }}
+              className="mt-8 space-y-5 lg:mt-0"
+            >
+              <ul className="space-y-2 text-sm text-slate-300">
+                <li className="flex items-center gap-2"><MapPin size={15} className="text-[#9DB8FF]" /> {d.contact.localisation}</li>
+                <li className="flex items-center gap-2"><Mail size={15} className="text-[#9DB8FF]" /> {d.contact.email}</li>
+                <li className="flex items-center gap-2"><Phone size={15} className="text-[#9DB8FF]" /> {d.contact.telephone}</li>
+              </ul>
+              <div className="flex gap-2">
+                {socials.map((s) => (
+                  <a key={s.label} href={s.href} target="_blank" rel="noreferrer" aria-label={s.label}
+                     className={`rounded-lg border border-white/15 p-2.5 transition hover:-translate-y-1 hover:bg-white hover:text-[#0F1B2D] ${FOCUS}`}>
+                    {s.icon}
+                  </a>
                 ))}
-              </h1>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.7, ease: EASE }}
-                className="mt-6 max-w-2xl text-lg leading-relaxed"
-              >
-                {d.profil.description}
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.7, ease: EASE }}
-                className="mt-8 flex flex-wrap gap-3"
-              >
-                <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={() => setModal('about')}
-                  className={`rounded-lg bg-[#0F1B2D] px-5 py-3 font-semibold text-white hover:bg-[#1C2D47] ${FOCUS}`}>
-                  Qui suis-je ?
-                </motion.button>
-                <motion.a whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} href={d.profil.cvLink} download="CV_Marsouk_Biaou.pdf"
-                  className={`inline-flex items-center gap-2 rounded-lg border border-[#C9D5EE] bg-white px-5 py-3 font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] ${FOCUS}`}>
-                  <Download size={18} /> Télécharger mon CV
-                </motion.a>
-              </motion.div>
-              <div className="mt-12"><Topology /></div>
-            </section>
+              </div>
+              <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={() => setModal('contact')}
+                className={`w-full rounded-lg bg-white px-4 py-3 font-semibold text-[#0F1B2D] hover:bg-[#E3EAFB] ${FOCUS}`}>
+                Me contacter
+              </motion.button>
+            </motion.div>
+          </aside>
 
-            {/* Objectif actuel */}
-            {d.objectif.actif && (
-              <section className="pb-24">
-                <SectionTitle id="objectif">Objectif actuel</SectionTitle>
-                <Reveal>
-                  <div className="relative overflow-hidden rounded-2xl bg-[#0F1B2D] p-6 text-white md:p-10">
-                    <motion.div
-                      aria-hidden="true" className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#1D4ED8]/40 blur-3xl"
-                      animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
-                    />
-                    <div className="relative">
-                      <p className="inline-flex items-center gap-2 text-sm font-medium text-[#9DB8FF]">
-                        <span className="relative flex h-2.5 w-2.5">
-                          <motion.span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400" animate={{ scale: [1, 2.4], opacity: [0.7, 0] }} transition={{ repeat: Infinity, duration: 1.6 }} />
-                          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                        </span>
-                        <Target size={16} /> {d.objectif.statut}
-                      </p>
-                      <h3 className={`${DISPLAY} mt-3 text-2xl font-bold leading-tight md:text-4xl`}>{d.objectif.intitule}</h3>
+          {/* Contenu */}
+          <main className="px-6 py-14 md:px-12 lg:px-16 lg:py-20">
+            <div className="mx-auto max-w-3xl">
+              {/* Hero */}
+              <section id="top" className="scroll-mt-24 pb-24">
+                <motion.p
+                  initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE }}
+                  className="mb-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-medium text-[#1D4ED8] shadow-sm"
+                >
+                  <GraduationCap size={16} /> {d.profil.statut}
+                </motion.p>
+                {d.objectif.actif && (
+                  <motion.button
+                    initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.6, ease: EASE }}
+                    whileHover={{ y: -2 }} onClick={() => goTo('objectif')}
+                    className={`mb-5 ml-0 mr-2 inline-flex items-center gap-2 rounded-full bg-[#0F1B2D] px-4 py-1.5 text-sm font-medium text-white shadow-sm sm:ml-2 ${FOCUS}`}
+                  >
+                    <span className="relative flex h-2.5 w-2.5">
+                      <motion.span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400" animate={{ scale: [1, 2.2], opacity: [0.7, 0] }} transition={{ repeat: Infinity, duration: 1.6 }} />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                    </span>
+                    {d.objectif.statut} : {d.objectif.types.join(' / ')}
+                  </motion.button>
+                )}
+                <h1 className={`${DISPLAY} text-4xl font-bold leading-[1.15] tracking-tight text-[#0F1B2D] md:text-6xl`}>
+                  {words.map((w, i) => (
+                    <span key={i} className="mr-[0.25em] inline-block overflow-hidden pb-1 align-bottom">
+                      <motion.span className="inline-block" initial={{ y: '110%' }} animate={{ y: 0 }}
+                        transition={{ duration: 0.7, delay: 0.15 + i * 0.05, ease: EASE }}>
+                        {w}
+                      </motion.span>
+                    </span>
+                  ))}
+                </h1>
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.7, ease: EASE }}
+                  className="mt-6 max-w-2xl text-lg leading-relaxed"
+                >
+                  {d.profil.description}
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.7, ease: EASE }}
+                  className="mt-8 flex flex-wrap gap-3"
+                >
+                  <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={() => setModal('about')}
+                    className={`rounded-lg bg-[#0F1B2D] px-5 py-3 font-semibold text-white hover:bg-[#1C2D47] ${FOCUS}`}>
+                    Qui suis-je ?
+                  </motion.button>
+                  <CvButton className={`inline-flex items-center gap-2 rounded-lg border border-[#C9D5EE] bg-white px-5 py-3 font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] ${FOCUS}`}>
+                    <Download size={18} /> Télécharger mon CV
+                  </CvButton>
+                </motion.div>
+                <div className="mt-12"><Topology /></div>
+              </section>
 
-                      <div className="mt-5 flex flex-wrap gap-2" aria-label="Types de contrat recherchés">
-                        {OBJECTIF_TYPES.map((t) => {
-                          const on = d.objectif.types.includes(t);
-                          return (
-                            <motion.span
-                              key={t} whileHover={{ y: -2 }}
-                              className={`rounded-full px-4 py-1.5 text-sm font-semibold ${on ? 'bg-white text-[#0F1B2D]' : 'border border-white/20 text-slate-400'}`}
-                            >
-                              {on && <CheckCircle2 size={14} className="mr-1.5 inline text-[#1D4ED8]" aria-hidden="true" />}
-                              {t}
-                            </motion.span>
-                          );
-                        })}
-                      </div>
+              {/* Objectif actuel */}
+              {d.objectif.actif && (
+                <section className="pb-24">
+                  <SectionTitle id="objectif">Objectif actuel</SectionTitle>
+                  <Reveal>
+                    <div className="relative overflow-hidden rounded-2xl bg-[#0F1B2D] p-6 text-white md:p-10">
+                      <motion.div
+                        aria-hidden="true" className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#1D4ED8]/40 blur-3xl"
+                        animate={{ scale: [1, 1.25, 1] }} transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
+                      />
+                      <div className="relative">
+                        <p className="inline-flex items-center gap-2 text-sm font-medium text-[#9DB8FF]">
+                          <span className="relative flex h-2.5 w-2.5">
+                            <motion.span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400" animate={{ scale: [1, 2.4], opacity: [0.7, 0] }} transition={{ repeat: Infinity, duration: 1.6 }} />
+                            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                          </span>
+                          <Target size={16} /> {d.objectif.statut}
+                        </p>
+                        <h3 className={`${DISPLAY} mt-3 text-2xl font-bold leading-tight md:text-4xl`}>{d.objectif.intitule}</h3>
 
-                      <p className="mt-5 max-w-2xl leading-relaxed text-slate-200">{d.objectif.details}</p>
-
-                      <dl className="mt-6 grid gap-3 sm:grid-cols-3">
-                        {[
-                          [<Calendar size={16} />, 'Disponibilité', d.objectif.disponibilite],
-                          [<Briefcase size={16} />, 'Rythme', d.objectif.rythme],
-                          [<MapPin size={16} />, 'Lieu', d.objectif.lieu],
-                        ].filter(([, , v]) => v).map(([ic, k, v]) => (
-                          <motion.div key={k} whileHover={{ y: -3 }} className="rounded-lg bg-white/10 p-4">
-                            <dt className="flex items-center gap-2 text-xs text-[#9DB8FF]">{ic} {k}</dt>
-                            <dd className="mt-1 font-semibold text-white">{v}</dd>
-                          </motion.div>
-                        ))}
-                      </dl>
-
-                      {d.objectif.domaines?.length > 0 && (
-                        <div className="mt-6 flex flex-wrap gap-2">
-                          {d.objectif.domaines.map((x) => (
-                            <span key={x} className="rounded-md bg-[#1D4ED8]/40 px-2.5 py-1 text-xs font-medium text-[#DCE6FF]">{x}</span>
-                          ))}
+                        <div className="mt-5 flex flex-wrap gap-2" aria-label="Types de contrat recherchés">
+                          {OBJECTIF_TYPES.map((t) => {
+                            const on = d.objectif.types.includes(t);
+                            return (
+                              <motion.span
+                                key={t} whileHover={{ y: -2 }}
+                                className={`rounded-full px-4 py-1.5 text-sm font-semibold ${on ? 'bg-white text-[#0F1B2D]' : 'border border-white/20 text-slate-400'}`}
+                              >
+                                {on && <CheckCircle2 size={14} className="mr-1.5 inline text-[#1D4ED8]" aria-hidden="true" />}
+                                {t}
+                              </motion.span>
+                            );
+                          })}
                         </div>
-                      )}
 
-                      <div className="mt-8 flex flex-wrap gap-3">
-                        <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={() => setModal('contact')}
-                          className={`rounded-lg bg-white px-5 py-3 font-semibold text-[#0F1B2D] hover:bg-[#E3EAFB] ${FOCUS}`}>
-                          Me proposer une opportunité
-                        </motion.button>
-                        <motion.a whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} href={d.profil.cvLink} download="CV_Marsouk_Biaou.pdf"
-                          className={`inline-flex items-center gap-2 rounded-lg border border-white/25 px-5 py-3 font-semibold text-white hover:bg-white/10 ${FOCUS}`}>
-                          <Download size={18} /> Télécharger mon CV
-                        </motion.a>
+                        <p className="mt-5 max-w-2xl leading-relaxed text-slate-200">{d.objectif.details}</p>
+
+                        <dl className="mt-6 grid gap-3 sm:grid-cols-3">
+                          {[
+                            [<Calendar size={16} />, 'Disponibilité', d.objectif.disponibilite],
+                            [<Briefcase size={16} />, 'Rythme', d.objectif.rythme],
+                            [<MapPin size={16} />, 'Lieu', d.objectif.lieu],
+                          ].filter(([, , v]) => v).map(([ic, k, v]) => (
+                            <motion.div key={k} whileHover={{ y: -3 }} className="rounded-lg bg-white/10 p-4">
+                              <dt className="flex items-center gap-2 text-xs text-[#9DB8FF]">{ic} {k}</dt>
+                              <dd className="mt-1 font-semibold text-white">{v}</dd>
+                            </motion.div>
+                          ))}
+                        </dl>
+
+                        {d.objectif.domaines?.length > 0 && (
+                          <div className="mt-6 flex flex-wrap gap-2">
+                            {d.objectif.domaines.map((x) => (
+                              <span key={x} className="rounded-md bg-[#1D4ED8]/40 px-2.5 py-1 text-xs font-medium text-[#DCE6FF]">{x}</span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="mt-8 flex flex-wrap gap-3">
+                          <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} onClick={() => setModal('contact')}
+                            className={`rounded-lg bg-white px-5 py-3 font-semibold text-[#0F1B2D] hover:bg-[#E3EAFB] ${FOCUS}`}>
+                            Me proposer une opportunité
+                          </motion.button>
+                          <CvButton className={`inline-flex items-center gap-2 rounded-lg border border-white/25 px-5 py-3 font-semibold text-white hover:bg-white/10 ${FOCUS}`}>
+                            <Download size={18} /> Télécharger mon CV
+                          </CvButton>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Reveal>
-              </section>
-            )}
-
-            {/* Parcours */}
-            <section className="pb-24">
-              <SectionTitle id="parcours">Parcours</SectionTitle>
-              <div ref={lineRef} className="relative pl-9">
-                <div className="absolute bottom-2 left-[7px] top-2 w-0.5 bg-[#C9D5EE]" />
-                <motion.div style={{ scaleY: lineProg }} className="absolute bottom-2 left-[7px] top-2 w-0.5 origin-top bg-[#1D4ED8]" />
-                <div className="space-y-5">
-                  {d.formations.map((f, i) => {
-                    const expandable = !!(f.details || f.document);
-                    return (
-                      <Reveal key={f.id} delay={i * 0.05} className="relative">
-                        <motion.span
-                          initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }}
-                          transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-                          className={`absolute -left-9 top-7 h-4 w-4 rounded-full border-4 border-[#F1F4F8] ${f.enCours ? 'bg-[#1D4ED8]' : 'bg-[#9DB8FF]'}`}
-                        />
-                        <Accordion
-                          open={openForm === f.id} expandable={expandable}
-                          onToggle={() => setOpenForm(openForm === f.id ? null : f.id)}
-                          header={
-                            <>
-                              <span className="flex items-center gap-2 text-sm font-medium text-[#1D4ED8]">
-                                {f.periode}
-                                {f.enCours && <span className="rounded-full bg-[#1D4ED8] px-2 py-0.5 text-xs text-white">En cours</span>}
-                              </span>
-                              <span className={`${DISPLAY} mt-1 block text-xl font-bold text-[#0F1B2D]`}>{f.diplome}</span>
-                              <span className="mt-0.5 block text-sm">{f.option}</span>
-                            </>
-                          }
-                        >
-                          <div className="md:flex md:gap-6">
-                            {f.photo && <Photo src={f.photo} alt={`Diplôme : ${f.diplome}`} />}
-                            <div>
-                              {f.details && <p className="leading-relaxed">{f.details}</p>}
-                              <p className="mt-3 flex items-center gap-1.5 text-sm"><MapPin size={14} /> {f.etablissement}</p>
-                              {f.document && <div className="mt-4"><DocLink href={f.document}>Voir le diplôme</DocLink></div>}
-                            </div>
-                          </div>
-                        </Accordion>
-                      </Reveal>
-                    );
-                  })}
-                </div>
-              </div>
-            </section>
-
-            {/* Expériences */}
-            <section className="pb-24">
-              <SectionTitle id="experiences">Expériences</SectionTitle>
-              <div className="space-y-4">
-                {d.experiences.map((e, i) => (
-                  <Reveal key={e.id} delay={i * 0.08}>
-                    <Accordion
-                      open={openExp === e.id} onToggle={() => setOpenExp(openExp === e.id ? null : e.id)}
-                      header={
-                        <>
-                          <span className="text-sm font-medium text-[#1D4ED8]">{e.periode}</span>
-                          <span className={`${DISPLAY} mt-1 block text-xl font-bold text-[#0F1B2D]`}>{e.entreprise}</span>
-                          <span className="mt-0.5 block text-sm">{e.poste}</span>
-                        </>
-                      }
-                    >
-                      <div className="md:flex md:gap-6">
-                        {e.photo && <Photo src={e.photo} alt={e.entreprise} />}
-                        <div>
-                          <p className="leading-relaxed">{e.details}</p>
-                          <div className="mt-4 flex flex-wrap gap-2">{e.tags.map((t) => <Tag key={t}>{t}</Tag>)}</div>
-                          {e.document && <div className="mt-5"><DocLink href={e.document}>Voir l'attestation</DocLink></div>}
-                        </div>
-                      </div>
-                    </Accordion>
                   </Reveal>
-                ))}
-              </div>
-            </section>
+                </section>
+              )}
 
-            {/* Compétences : onglets */}
-            <section className="pb-24">
-              <SectionTitle id="competences">Compétences</SectionTitle>
-              <Reveal>
-                <div role="tablist" aria-label="Domaines de compétences" className="mb-6 flex flex-wrap gap-2">
-                  {d.competences.map((c, i) => (
-                    <button
-                      key={c.titre} role="tab" aria-selected={tab === i} onClick={() => setTab(i)}
-                      className={`relative rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-                        tab === i ? 'text-white' : 'bg-white text-[#0F1B2D] hover:bg-[#E3EAFB]'
-                      } ${FOCUS}`}
-                    >
-                      {tab === i && (
-                        <motion.span layoutId="tab-pill" className="absolute inset-0 rounded-full bg-[#1D4ED8]"
-                          transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
-                      )}
-                      <span className="relative">{c.titre}</span>
-                    </button>
-                  ))}
-                </div>
-                <div className="min-h-[15rem] rounded-xl border border-[#DCE4F2] bg-white p-6 md:p-8">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={tab} role="tabpanel"
-                      initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
-                      transition={{ duration: 0.3, ease: EASE }}
-                    >
-                      <h3 className={`${DISPLAY} mb-5 flex items-center gap-3 text-2xl font-bold text-[#0F1B2D]`}>
-                        <SkillIcon className="text-[#1D4ED8]" /> {skill.titre}
-                      </h3>
-                      <ul className="space-y-3">
-                        {skill.items.map((it, j) => (
-                          <motion.li
-                            key={it} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 + j * 0.07, duration: 0.4, ease: EASE }}
-                            whileHover={{ x: 6 }}
-                            className="flex items-center gap-3 text-lg"
-                          >
-                            <CheckCircle2 size={18} className="shrink-0 text-[#1D4ED8]" /> {it}
-                          </motion.li>
-                        ))}
-                      </ul>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </Reveal>
-            </section>
-
-            {/* Certifications */}
-            {d.certifications?.length > 0 && (
+              {/* Parcours */}
               <section className="pb-24">
-                <SectionTitle id="certifications">Certifications</SectionTitle>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {d.certifications.map((c, i) => (
-                    <Reveal key={c.intitule} delay={i * 0.08}>
-                      <motion.div
-                        whileHover={{ y: -4, boxShadow: '0 18px 40px -18px rgba(29,78,216,.45)' }}
-                        className="flex h-full flex-col rounded-xl border border-[#DCE4F2] bg-white p-6"
+                <SectionTitle id="parcours">Parcours</SectionTitle>
+                <div ref={lineRef} className="relative pl-9">
+                  <div className="absolute bottom-2 left-[7px] top-2 w-0.5 bg-[#C9D5EE]" />
+                  <motion.div style={{ scaleY: lineProg }} className="absolute bottom-2 left-[7px] top-2 w-0.5 origin-top bg-[#1D4ED8]" />
+                  <div className="space-y-5">
+                    {d.formations.map((f, i) => {
+                      const expandable = !!(f.details || f.document);
+                      return (
+                        <Reveal key={f.id} delay={i * 0.05} className="relative">
+                          <motion.span
+                            initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                            className={`absolute -left-9 top-7 h-4 w-4 rounded-full border-4 border-[#F1F4F8] ${f.enCours ? 'bg-[#1D4ED8]' : 'bg-[#9DB8FF]'}`}
+                          />
+                          <Accordion
+                            open={openForm === f.id} expandable={expandable}
+                            onToggle={() => setOpenForm(openForm === f.id ? null : f.id)}
+                            header={
+                              <>
+                                <span className="flex items-center gap-2 text-sm font-medium text-[#1D4ED8]">
+                                  {f.periode}
+                                  {f.enCours && <span className="rounded-full bg-[#1D4ED8] px-2 py-0.5 text-xs text-white">En cours</span>}
+                                </span>
+                                <span className={`${DISPLAY} mt-1 block text-xl font-bold text-[#0F1B2D]`}>{f.diplome}</span>
+                                <span className="mt-0.5 block text-sm">{f.option}</span>
+                              </>
+                            }
+                          >
+                            <div className="md:flex md:gap-6">
+                              {f.photo && <Photo src={f.photo} alt={`Diplôme : ${f.diplome}`} />}
+                              <div>
+                                {f.details && <p className="leading-relaxed">{f.details}</p>}
+                                <p className="mt-3 flex items-center gap-1.5 text-sm"><MapPin size={14} /> {f.etablissement}</p>
+                                {f.document && <div className="mt-4"><DocLink href={f.document}>Voir le diplôme</DocLink></div>}
+                              </div>
+                            </div>
+                          </Accordion>
+                        </Reveal>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+
+              {/* Expériences */}
+              <section className="pb-24">
+                <SectionTitle id="experiences">Expériences</SectionTitle>
+                <div className="space-y-4">
+                  {d.experiences.map((e, i) => (
+                    <Reveal key={e.id} delay={i * 0.08}>
+                      <Accordion
+                        open={openExp === e.id} onToggle={() => setOpenExp(openExp === e.id ? null : e.id)}
+                        header={
+                          <>
+                            <span className="text-sm font-medium text-[#1D4ED8]">{e.periode}</span>
+                            <span className={`${DISPLAY} mt-1 block text-xl font-bold text-[#0F1B2D]`}>{e.entreprise}</span>
+                            <span className="mt-0.5 block text-sm">{e.poste}</span>
+                          </>
+                        }
                       >
-                        <span className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[#E3EAFB] text-[#1D4ED8]">
-                          <Award size={22} />
-                        </span>
-                        <h3 className={`${DISPLAY} text-lg font-bold text-[#0F1B2D]`}>{c.intitule}</h3>
-                        <p className="mt-1 text-sm">{[c.organisme, c.date].filter(Boolean).join(' · ')}</p>
-                        {c.document && (
-                          <a href={c.document} target="_blank" rel="noreferrer"
-                             className={`mt-auto inline-flex items-center gap-2 pt-4 text-sm font-semibold text-[#1D4ED8] hover:underline ${FOCUS}`}>
-                            <FileText size={15} /> Voir le certificat
-                          </a>
-                        )}
-                      </motion.div>
+                        <div className="md:flex md:gap-6">
+                          {e.photo && <Photo src={e.photo} alt={e.entreprise} />}
+                          <div>
+                            <p className="leading-relaxed">{e.details}</p>
+                            <div className="mt-4 flex flex-wrap gap-2">{e.tags.map((t) => <Tag key={t}>{t}</Tag>)}</div>
+                            {e.document && <div className="mt-5"><DocLink href={e.document}>Voir l'attestation</DocLink></div>}
+                          </div>
+                        </div>
+                      </Accordion>
                     </Reveal>
                   ))}
                 </div>
               </section>
-            )}
 
-            {/* Projets */}
-            <section className="pb-24">
-              <SectionTitle id="projets">Projets</SectionTitle>
-              <div className="space-y-6">
-                {d.projets.map((p, i) => (
-                  <Reveal key={p.id} delay={i * 0.1}>
-                    <Tilt className="rounded-xl border border-[#DCE4F2] bg-white p-6 md:p-8">
-                      <h3 className={`${DISPLAY} text-xl font-bold text-[#0F1B2D]`}>{p.titre}</h3>
-                      <p className="mt-2 leading-relaxed">{p.description}</p>
-                      <div className="mt-4 flex flex-wrap gap-2">{p.tech.map((t) => <Tag key={t}>{t}</Tag>)}</div>
-                      <div className="mt-5 flex flex-wrap gap-3">
-                        {p.liens.filter((l) => !l.url.includes('...')).map((l) => (
-                          <motion.a key={l.nom} href={l.url} target="_blank" rel="noreferrer" whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }}
-                            className={`inline-flex items-center gap-2 rounded-lg border border-[#C9D5EE] px-4 py-2 text-sm font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] hover:text-[#1D4ED8] ${FOCUS}`}>
-                            {linkIcon(l.type)} {l.nom}
-                          </motion.a>
-                        ))}
-                      </div>
-                    </Tilt>
-                  </Reveal>
-                ))}
-              </div>
-            </section>
+              {/* Compétences : onglets */}
+              <section className="pb-24">
+                <SectionTitle id="competences">Compétences</SectionTitle>
+                <Reveal>
+                  <div role="tablist" aria-label="Domaines de compétences" className="mb-6 flex flex-wrap gap-2">
+                    {d.competences.map((c, i) => (
+                      <button
+                        key={c.titre} role="tab" aria-selected={tab === i} onClick={() => setTab(i)}
+                        className={`relative rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                          tab === i ? 'text-white' : 'bg-white text-[#0F1B2D] hover:bg-[#E3EAFB]'
+                        } ${FOCUS}`}
+                      >
+                        {tab === i && (
+                          <motion.span layoutId="tab-pill" className="absolute inset-0 rounded-full bg-[#1D4ED8]"
+                            transition={{ type: 'spring', stiffness: 380, damping: 30 }} />
+                        )}
+                        <span className="relative">{c.titre}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="min-h-[15rem] rounded-xl border border-[#DCE4F2] bg-white p-6 md:p-8">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={tab} role="tabpanel"
+                        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+                        transition={{ duration: 0.3, ease: EASE }}
+                      >
+                        <h3 className={`${DISPLAY} mb-5 flex items-center gap-3 text-2xl font-bold text-[#0F1B2D]`}>
+                          <SkillIcon className="text-[#1D4ED8]" /> {skill.titre}
+                        </h3>
+                        <ul className="space-y-3">
+                          {skill.items.map((it, j) => (
+                            <motion.li
+                              key={it} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.1 + j * 0.07, duration: 0.4, ease: EASE }}
+                              whileHover={{ x: 6 }}
+                              className="flex items-center gap-3 text-lg"
+                            >
+                              <CheckCircle2 size={18} className="shrink-0 text-[#1D4ED8]" /> {it}
+                            </motion.li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                </Reveal>
+              </section>
 
-            {/* Langues + atouts */}
-            <section className="grid gap-12 pb-16 sm:grid-cols-2">
-              <Reveal>
-                <h2 className={`${DISPLAY} mb-4 text-2xl font-bold text-[#0F1B2D]`}>Langues</h2>
-                <ul className="space-y-2">
-                  {d.langues.map((l) => (
-                    <li key={l.nom} className="flex justify-between border-b border-[#DCE4F2] pb-2">
-                      <span className="font-medium text-[#0F1B2D]">{l.nom}</span><span>{l.niveau}</span>
-                    </li>
+              {/* Certifications */}
+              {d.certifications?.length > 0 && (
+                <section className="pb-24">
+                  <SectionTitle id="certifications">Certifications</SectionTitle>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {d.certifications.map((c, i) => (
+                      <Reveal key={c.intitule} delay={i * 0.08}>
+                        <motion.div
+                          whileHover={{ y: -4, boxShadow: '0 18px 40px -18px rgba(29,78,216,.45)' }}
+                          className="flex h-full flex-col rounded-xl border border-[#DCE4F2] bg-white p-6"
+                        >
+                          <span className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[#E3EAFB] text-[#1D4ED8]">
+                            <Award size={22} />
+                          </span>
+                          <h3 className={`${DISPLAY} text-lg font-bold text-[#0F1B2D]`}>{c.intitule}</h3>
+                          <p className="mt-1 text-sm">{[c.organisme, c.date].filter(Boolean).join(' · ')}</p>
+                          {c.document && (
+                            <ExtLink href={c.document}
+                              className={`mt-auto inline-flex items-center gap-2 pt-4 text-sm font-semibold text-[#1D4ED8] hover:underline ${FOCUS}`}>
+                              <FileText size={15} /> Voir le certificat
+                            </ExtLink>
+                          )}
+                        </motion.div>
+                      </Reveal>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Projets */}
+              <section className="pb-24">
+                <SectionTitle id="projets">Projets</SectionTitle>
+                <div className="space-y-6">
+                  {d.projets.map((p, i) => (
+                    <Reveal key={p.id} delay={i * 0.1}>
+                      <Tilt className="rounded-xl border border-[#DCE4F2] bg-white p-6 md:p-8">
+                        <h3 className={`${DISPLAY} text-xl font-bold text-[#0F1B2D]`}>{p.titre}</h3>
+                        <p className="mt-2 leading-relaxed">{p.description}</p>
+                        <div className="mt-4 flex flex-wrap gap-2">{p.tech.map((t) => <Tag key={t}>{t}</Tag>)}</div>
+                        <div className="mt-5 flex flex-wrap gap-3">
+                          {p.liens.filter((l) => !l.url.includes('...')).map((l) => (
+                            <ExtLink key={l.nom} href={l.url}
+                              className={`inline-flex items-center gap-2 rounded-lg border border-[#C9D5EE] px-4 py-2 text-sm font-semibold text-[#0F1B2D] hover:border-[#1D4ED8] hover:text-[#1D4ED8] ${FOCUS}`}>
+                              {linkIcon(l.type)} {l.nom}
+                            </ExtLink>
+                          ))}
+                        </div>
+                      </Tilt>
+                    </Reveal>
                   ))}
-                </ul>
-              </Reveal>
-              <Reveal delay={0.1}>
-                <h2 className={`${DISPLAY} mb-4 text-2xl font-bold text-[#0F1B2D]`}>Atouts</h2>
-                <div className="flex flex-wrap gap-2">{d.atouts.map((a) => <Tag key={a}>{a}</Tag>)}</div>
-              </Reveal>
-            </section>
+                </div>
+              </section>
 
-            <footer className="border-t border-[#DCE4F2] pt-6 text-sm">
-              © {new Date().getFullYear()} {d.profil.prenom} {d.profil.nom}
-            </footer>
-          </div>
-        </main>
-      </div>
+              {/* Langues + atouts */}
+              <section className="grid gap-12 pb-16 sm:grid-cols-2">
+                <Reveal>
+                  <h2 className={`${DISPLAY} mb-4 text-2xl font-bold text-[#0F1B2D]`}>Langues</h2>
+                  <ul className="space-y-2">
+                    {d.langues.map((l) => (
+                      <li key={l.nom} className="flex justify-between border-b border-[#DCE4F2] pb-2">
+                        <span className="font-medium text-[#0F1B2D]">{l.nom}</span><span>{l.niveau}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Reveal>
+                <Reveal delay={0.1}>
+                  <h2 className={`${DISPLAY} mb-4 text-2xl font-bold text-[#0F1B2D]`}>Atouts</h2>
+                  <div className="flex flex-wrap gap-2">{d.atouts.map((a) => <Tag key={a}>{a}</Tag>)}</div>
+                </Reveal>
+              </section>
 
-      <AnimatePresence>
-        {welcome && (
-          <Welcome key="welcome" onContinue={closeWelcome} onContact={() => { setWelcome(false); setModal('contact'); }} />
-        )}
-      </AnimatePresence>
-
-      {/* Modales */}
-      <AnimatePresence>
-        {modal === 'about' && (
-          <Modal key="about" onClose={closeModal} label="Qui suis-je ?" wide>
-            <AboutContent socials={socials} onContact={() => setModal('contact')} />
-          </Modal>
-        )}
-        {modal === 'contact' && (
-          <Modal key="contact" onClose={closeModal} label="Me contacter">
-            <div className="p-8 md:p-10">
-              <h2 className={`${DISPLAY} text-3xl font-bold text-[#0F1B2D]`}>Écrivez-moi</h2>
-              <p className="mb-6 mt-2">Stage, alternance, projet : décrivez votre besoin en quelques lignes.</p>
-              <ContactForm onDone={closeModal} />
+              <footer className="border-t border-[#DCE4F2] pt-6 text-sm">
+                © {new Date().getFullYear()} {d.profil.prenom} {d.profil.nom}
+              </footer>
             </div>
-          </Modal>
-        )}
-      </AnimatePresence>
+          </main>
+        </div>
+
+        <AnimatePresence>
+          {welcome && (
+            <Welcome key="welcome" onContinue={closeWelcome} onContact={() => { setWelcome(false); setModal('contact'); }} />
+          )}
+        </AnimatePresence>
+
+        {/* Modales */}
+        <AnimatePresence>
+          {modal === 'about' && (
+            <Modal key="about" onClose={closeModal} label="Qui suis-je ?" wide>
+              <AboutContent socials={socials} onContact={() => setModal('contact')} />
+            </Modal>
+          )}
+          {modal === 'contact' && (
+            <Modal key="contact" onClose={closeModal} label="Me contacter">
+              <div className="p-8 md:p-10">
+                <h2 className={`${DISPLAY} text-3xl font-bold text-[#0F1B2D]`}>Écrivez-moi</h2>
+                <p className="mb-6 mt-2">Stage, alternance, projet : décrivez votre besoin en quelques lignes.</p>
+                <ContactForm onDone={closeModal} />
+              </div>
+            </Modal>
+          )}
+        </AnimatePresence>
+
+        {/* Confirmation (au-dessus de tout) */}
+        <AnimatePresence>
+          {confirm && <ConfirmDialog key="confirm" request={confirm} onClose={closeConfirm} />}
+        </AnimatePresence>
+      </ConfirmContext.Provider>
     </MotionConfig>
   );
 };

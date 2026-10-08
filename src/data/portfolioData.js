@@ -5,7 +5,7 @@ export const portfolioData = {
   profil: {
     prenom: "Marsouk",
     nom: "BIAOU",
-    titre: "Étudiant en L3 MIAGE · Systèmes d'information & data",
+    titre: "Étudiant en L3 MIAGE · Méthodes informatiques appliquées à la gestion des entreprises",
     statut: "L3 MIAGE — ISTIC, Université de Rennes",
     accroche: "Je conçois des systèmes d'information qui aident les organisations à décider avec leurs données.",
     description:
@@ -22,12 +22,12 @@ export const portfolioData = {
   objectif: {
     actif: true,
     statut: "Recherche active",
-    types: ["Alternance"],
-    intitule: "À la recherche d'une alternance en systèmes d'information et data",
+    types: ["Stage"],
+    intitule: "À la recherche d'un stage de 3 mois à partir d'avril",
     details:
-      "Étudiant en L3 MIAGE, je cherche une entreprise pour mettre en pratique la conception de systèmes d'information, les bases de données et le développement, tout en préparant le Master MIAGE parcours DABI.",
-    disponibilite: "À définir",
-    rythme: "À définir",
+      "Étudiant en L3 MIAGE à l'ISTIC, je cherche un stage de trois mois, à compter d'avril, pour mettre en pratique la conception de systèmes d'information, les bases de données et le développement.",
+    disponibilite: "À partir d'avril 2027",
+    rythme: "Stage de 3 mois",
     lieu: "Rennes et alentours, ou à distance",
     domaines: ["Systèmes d'information", "Data et BI", "Développement web et mobile"],
     misAJour: "Octobre 2026", // affiché dans la fenêtre d'accueil (laisse vide "" pour le masquer)
@@ -81,11 +81,11 @@ export const portfolioData = {
       id: 4,
       entreprise: "Ford High Tech",
       poste: "Stage professionnel · Développement web et mobile",
-      periode: "6 mois · attestation du 24 juillet 2026", // À VÉRIFIER : remplace par tes dates exactes (ex. « Février – juillet 2026 »)
+      periode: "Janvier – juin 2026", // À VÉRIFIER : remplace par tes dates exactes (ex. « Février – juillet 2026 »)
       details:
         "Stage professionnel de six mois axé sur la conception et le développement d'applications web et mobiles. Analyse des besoins des utilisateurs et mise en œuvre de solutions techniques adaptées.",
       tags: ["Applications web", "Applications mobiles", "Analyse des besoins"],
-      document: "/attestation-ford-high-tech.pdf", // fichier à placer dans public/
+      document: "https://drive.google.com/file/d/1xZRxO2_HWGKeGngtJGCLsotLHdKmm5G-/view?usp=drive_link", // fichier à placer dans public/
     },
     {
       id: 1,
@@ -155,22 +155,15 @@ export const portfolioData = {
   ],
 
   // ====== CERTIFICATIONS ======
-  // Tant que la liste est vide, la rubrique n'apparaît pas sur le site.
-  // Pour en ajouter une, copie ce modèle entre les crochets :
-  // {
-  //   intitule: "Nom de la certification",
-  //   organisme: "Organisme qui l'a délivrée",
-  //   date: "Mois année",
-  //   document: "/certificat-xxx.pdf", // ou lien https:// ; laisse "" s'il n'y en a pas
-  // },
   certifications: [
-      {
-        intitule: "EXEMPLE : nom de ta certification",
-        organisme: "Organisme (à remplacer)",
-        date: "Mois année",
-        document: "",
-      },
-
+    // ⚠️ ENTRÉE D'EXEMPLE pour voir la mise en page : remplace-la par une vraie certification
+    // ou supprime-la avant de publier. Ne publie jamais une certification que tu n'as pas obtenue.
+    {
+      intitule: "Google Data Analytics Professional Certificate — En cours",
+      organisme: "Google / Coursera",
+      date: "Début octobre 2026",
+      document: "https://drive.google.com/file/d/1JxaEjIVSXbQFx1hE0IjI-pZ-PLto-DeM/view?usp=drive_link",
+    },
   ],
 
   projets: [
@@ -181,8 +174,8 @@ export const portfolioData = {
         "Script Python qui sauvegarde automatiquement les configurations de switches Cisco et envoie un rapport par email.",
       tech: ["Python", "Paramiko", "Netmiko"],
       liens: [
-        { nom: "GitHub", url: "https://github.com/...", type: "github" }, // liens contenant "..." sont masqués
-        { nom: "Documentation", url: "https://drive.google.com/...", type: "drive" },
+        { nom: "GitHub", url: "https://github.com/biaoumarsouk/save-config-pro", type: "github" }, // liens contenant "..." sont masqués
+        { nom: "Documentation", url: "https://drive.google.com/file/d/1fDNN_gcyuI-66nu7hIuQd-Q1POy7tSsK/view?usp=drive_link", type: "drive" },
       ],
     },
     {
@@ -192,8 +185,10 @@ export const portfolioData = {
         "Interface de vente en ligne avec gestion du panier et paiements sécurisés.",
       tech: ["React.js", "Tailwind CSS", "Node.js"],
       liens: [
-        { nom: "Site web", url: "https://inawo.com", type: "web" },
-        { nom: "Code source", url: "https://github.com/...", type: "github" },
+        { nom: "Site web", url: "https://www.inawo.pro/fr/", type: "web" },
+        { nom: "Application Android", url: "https://play.google.com/store/apps/details?id=com.inawo.inawombl", type: "mobile" },
+        { nom: "Application iOS", url: "https://apps.apple.com/fr/app/NOM-DE-L-APP/idXXXXXXXXXX", type: "mobile" },
+        { nom: "Maquettes Figma", url: "https://www.figma.com/design/akywKVegG7QzwuAEgKkVTt/Smartdev-ecommerce?node-id=0-1&t=ZYWkfXhtPR96K3vo-1", type: "figma" },
       ],
     },
   ],
@@ -202,7 +197,7 @@ export const portfolioData = {
 
   contact: {
     email: "biaoumarsouk@gmail.com",
-    telephone: "+229 01 57 77 53 08",
+    telephone: "+33 7 59 85 78 47",
     localisation: "Rennes, France", // À VÉRIFIER
     linkedin: "https://bj.linkedin.com/in/marsouk-biaou-698198324",
     whatsapp: "https://wa.me/2290157775308",
