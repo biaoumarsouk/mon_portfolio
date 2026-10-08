@@ -9,7 +9,7 @@ import {
   MessageCircle, Facebook, GraduationCap, Phone, ChevronDown, CheckCircle2,
   Quote, Languages, Sparkles, Target, ArrowRight, Briefcase, Award,
 } from 'lucide-react';
-import { portfolioData as d } from './data/portfolioData';
+import { portfolioData as d , TOPO} from './data/portfolioData';
 
 /* Encre #0F1B2D · Papier #F1F4F8 · Cobalt #1D4ED8 · Ciel #9DB8FF · Ardoise #52607A */
 const DISPLAY = "font-['Bricolage_Grotesque',sans-serif]";
@@ -349,54 +349,6 @@ const Modal = ({ onClose, label, wide, children }) => {
 };
 
 /* ---------- Réseau interactif du hero ---------- */
-const TOPO = [
-  {
-    id: 'miage',
-    t: 'MIAGE',
-    s: 'Systèmes d’information',
-    x: 50,
-    y: 50,
-    main: true,
-    info: "Au centre de tout : concevoir des systèmes d'information qui répondent à de vrais besoins métier.",
-    tags: ['UML · Merise', 'Gestion de projet', 'Méthodes agiles'],
-  },
-  {
-    id: 'dev',
-    t: 'Développement',
-    s: 'React · Laravel',
-    x: 18,
-    y: 20,
-    info: 'Je conçois des applications web et mobiles, de la conception jusqu’à la mise en ligne.',
-    tags: ['React', 'React Native', 'Laravel', 'Tailwind CSS'],
-  },
-  {
-    id: 'data',
-    t: 'Data · DABI',
-    s: 'SQL · Python',
-    x: 82,
-    y: 20,
-    info: "Mon objectif : exploiter les données pour produire des indicateurs, identifier des tendances et aider à la prise de décision.",
-    tags: ['SQL', 'Python', 'Power BI', 'Excel'],
-  },
-  {
-    id: 'reseaux',
-    t: 'Réseaux',
-    s: 'Cisco · Linux',
-    x: 18,
-    y: 80,
-    info: "Mon socle technique : administration réseau, systèmes Linux et Windows, sécurité et automatisation.",
-    tags: ['Cisco', 'Linux', 'Windows', 'Automatisation'],
-  },
-  {
-    id: 'design',
-    t: 'UI/UX',
-    s: 'Figma',
-    x: 82,
-    y: 80,
-    info: "Je m’intéresse également à la conception d’interfaces claires et à l’expérience utilisateur avant le développement.",
-    tags: ['Figma', 'Maquettes', 'UI/UX', 'Design system'],
-  },
-];
 
 const Topology = () => {
   const [active, setActive] = useState('miage');

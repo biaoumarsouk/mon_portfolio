@@ -1,6 +1,55 @@
 // src/data/portfolioData.js
 // Les lignes marquées "À VÉRIFIER" sont des suppositions de ma part : corrige-les.
 
+export const TOPO = [
+  {
+    id: 'miage',
+    t: 'MIAGE',
+    s: 'Systèmes d’information',
+    x: 50,
+    y: 50,
+    main: true,
+    info: "Au centre de tout : concevoir des systèmes d'information qui répondent à de vrais besoins métier.",
+    tags: ['UML · Merise', 'Gestion de projet', 'Méthodes agiles'],
+  },
+  {
+    id: 'dev',
+    t: 'Développement',
+    s: 'React · Laravel',
+    x: 18,
+    y: 20,
+    info: 'Je conçois des applications web et mobiles, de la conception jusqu’à la mise en ligne.',
+    tags: ['React', 'React Native', 'Laravel', 'Tailwind CSS'],
+  },
+  {
+    id: 'data',
+    t: 'Data · DABI',
+    s: 'SQL · Python',
+    x: 82,
+    y: 20,
+    info: "Mon objectif : exploiter les données pour produire des indicateurs, identifier des tendances et aider à la prise de décision.",
+    tags: ['SQL', 'Python', 'Power BI', 'Excel'],
+  },
+  {
+    id: 'reseaux',
+    t: 'Réseaux',
+    s: 'Cisco · Linux',
+    x: 18,
+    y: 80,
+    info: "Mon socle technique : administration réseau, systèmes Linux et Windows, sécurité et automatisation.",
+    tags: ['Cisco', 'Linux', 'Windows', 'Automatisation'],
+  },
+  {
+    id: 'design',
+    t: 'UI/UX',
+    s: 'Figma',
+    x: 82,
+    y: 80,
+    info: "Je m’intéresse également à la conception d’interfaces claires et à l’expérience utilisateur avant le développement.",
+    tags: ['Figma', 'Maquettes', 'UI/UX', 'Design system'],
+  },
+];
+
 export const portfolioData = {
   profil: {
     prenom: "Marsouk",
@@ -61,7 +110,7 @@ export const portfolioData = {
     {
       titre: "Développement",
       icon: "Code2",
-      items: ["React.js / React Native", "Laravel (PHP)", "Python, Java, C++", "Tailwind CSS"],
+      items: ["React.js / React Native (JS)", "Laravel/Symfony (PHP)", "Python, Java", "Tailwind/Bootstrap (CSS)", "Docker"],
     },
     {
       // À VÉRIFIER : seul Figma vient de tes stages, adapte le reste
@@ -170,8 +219,7 @@ export const portfolioData = {
     {
       id: 1,
       titre: "Système d'automatisation réseau",
-      description:
-        "Script Python qui sauvegarde automatiquement les configurations de switches Cisco et envoie un rapport par email.",
+      description:"Développement d’un logiciel Python avec interface graphique pour automatiser la sauvegarde, la synchronisation et la restauration des configurations d’équipements réseau.",
       tech: ["Python", "Paramiko", "Netmiko"],
       liens: [
         { nom: "GitHub", url: "https://github.com/biaoumarsouk/save-config-pro", type: "github" }, // liens contenant "..." sont masqués
@@ -187,7 +235,7 @@ export const portfolioData = {
       liens: [
         { nom: "Site web", url: "https://www.inawo.pro/fr/", type: "web" },
         { nom: "Application Android", url: "https://play.google.com/store/apps/details?id=com.inawo.inawombl", type: "mobile" },
-        { nom: "Application iOS", url: "https://apps.apple.com/fr/app/NOM-DE-L-APP/idXXXXXXXXXX", type: "mobile" },
+        { nom: "Application iOS", url: "https://apps.apple.com/bj/app/inawo/id6798759176?l=fr-FR", type: "mobile" },
         { nom: "Maquettes Figma", url: "https://www.figma.com/design/akywKVegG7QzwuAEgKkVTt/Smartdev-ecommerce?node-id=0-1&t=ZYWkfXhtPR96K3vo-1", type: "figma" },
       ],
     },
