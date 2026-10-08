@@ -350,151 +350,271 @@ const Modal = ({ onClose, label, wide, children }) => {
 
 /* ---------- Réseau interactif du hero ---------- */
 const TOPO = [
-  { id: 'miage', t: 'MIAGE', s: "Systèmes d'information", x: 50, y: 50, main: true,
-    target: 'parcours', cta: 'Voir mon parcours',
+  {
+    id: 'miage',
+    t: 'MIAGE',
+    s: 'Systèmes d’information',
+    x: 50,
+    y: 50,
+    main: true,
     info: "Au centre de tout : concevoir des systèmes d'information qui répondent à de vrais besoins métier.",
-    tags: ['UML · Merise', 'Gestion de projet', 'Méthodes agiles'] },
-  { id: 'dev', t: 'Développement', s: 'React · Laravel', x: 18, y: 20,
-    target: 'projets', cta: 'Voir mes projets',
-    info: 'Des applications web et mobiles, de la maquette à la mise en ligne.',
-    tags: ['React / React Native', 'Laravel', 'Tailwind CSS'] },
-  { id: 'data', t: 'Data · DABI', s: 'SQL · Python', x: 82, y: 20,
-    target: 'competences', cta: 'Voir mes compétences',
-    info: 'Exploiter les données pour aider à décider : c’est l’objectif de mon Master.',
-    tags: ['SQL', 'Python', 'Visualisation de données'] },
-  { id: 'reseaux', t: 'Réseaux', s: 'Cisco · Linux', x: 18, y: 80,
-    target: 'experiences', cta: 'Voir mes expériences',
-    info: 'Mon socle technique : administration réseau, sécurité et automatisation.',
-    tags: ['Cisco · pare-feu', 'Linux · Windows', 'Sauvegarde automatisée'] },
-  { id: 'design', t: 'UI/UX', s: 'Figma', x: 82, y: 80,
-    target: 'projets', cta: 'Voir mes projets',
-    info: 'Penser l’interface et le parcours utilisateur avant d’écrire le code.',
-    tags: ['Figma', 'Maquettes web et mobile', 'Design system'] },
+    tags: ['UML · Merise', 'Gestion de projet', 'Méthodes agiles'],
+  },
+  {
+    id: 'dev',
+    t: 'Développement',
+    s: 'React · Laravel',
+    x: 18,
+    y: 20,
+    info: 'Je conçois des applications web et mobiles, de la conception jusqu’à la mise en ligne.',
+    tags: ['React', 'React Native', 'Laravel', 'Tailwind CSS'],
+  },
+  {
+    id: 'data',
+    t: 'Data · DABI',
+    s: 'SQL · Python',
+    x: 82,
+    y: 20,
+    info: "Mon objectif : exploiter les données pour produire des indicateurs, identifier des tendances et aider à la prise de décision.",
+    tags: ['SQL', 'Python', 'Power BI', 'Excel'],
+  },
+  {
+    id: 'reseaux',
+    t: 'Réseaux',
+    s: 'Cisco · Linux',
+    x: 18,
+    y: 80,
+    info: "Mon socle technique : administration réseau, systèmes Linux et Windows, sécurité et automatisation.",
+    tags: ['Cisco', 'Linux', 'Windows', 'Automatisation'],
+  },
+  {
+    id: 'design',
+    t: 'UI/UX',
+    s: 'Figma',
+    x: 82,
+    y: 80,
+    info: "Je m’intéresse également à la conception d’interfaces claires et à l’expérience utilisateur avant le développement.",
+    tags: ['Figma', 'Maquettes', 'UI/UX', 'Design system'],
+  },
 ];
 
 const Topology = () => {
   const [active, setActive] = useState('miage');
   const [auto, setAuto] = useState(true);
+
   const mx = useMotionValue(-999);
   const my = useMotionValue(-999);
+
   const spot = useMotionTemplate`radial-gradient(220px circle at ${mx}px ${my}px, rgba(29,78,216,.16), transparent 70%)`;
 
-  // Parcours automatique tant que le visiteur n'a pas interagi
   useEffect(() => {
     if (!auto) return;
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    const t = setInterval(() => {
-      setActive((cur) => TOPO[(TOPO.findIndex((n) => n.id === cur) + 1) % TOPO.length].id);
+
+    const timer = setInterval(() => {
+      setActive((current) => {
+        const index = TOPO.findIndex((node) => node.id === current);
+        return TOPO[(index + 1) % TOPO.length].id;
+      });
     }, 3500);
-    return () => clearInterval(t);
+
+    return () => clearInterval(timer);
   }, [auto]);
 
-  const pick = (id) => { setAuto(false); setActive(id); };
-  const current = TOPO.find((n) => n.id === active);
+  const pick = (id) => {
+    setAuto(false);
+    setActive(id);
+  };
+
+  const current = TOPO.find((node) => node.id === active);
 
   const onMove = (e) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    mx.set(e.clientX - r.left);
-    my.set(e.clientY - r.top);
+    const rect = e.currentTarget.getBoundingClientRect();
+    mx.set(e.clientX - rect.left);
+    my.set(e.clientY - rect.top);
   };
 
   return (
     <div className="w-full max-w-xl">
+
+      {/* Réseau interactif */}
       <div
-        role="group" aria-label="Réseau interactif de mes domaines"
-        onPointerMove={onMove} onPointerLeave={() => { mx.set(-999); my.set(-999); }}
+        role="group"
+        aria-label="Réseau interactif de mes domaines"
+        onPointerMove={onMove}
+        onPointerLeave={() => { mx.set(-999); my.set(-999); }}
         className="relative h-[330px] w-full overflow-hidden rounded-2xl border border-[#DCE4F2] bg-white/70 sm:h-[360px]"
         style={{ backgroundImage: 'radial-gradient(#C9D5EE 1px, transparent 1px)', backgroundSize: '22px 22px' }}
       >
-        {/* Halo qui suit la souris */}
+
+        {/* Halo souris */}
         <motion.div aria-hidden="true" className="pointer-events-none absolute inset-0" style={{ background: spot }} />
 
-        {/* Liens */}
+        {/* Connexions */}
         <svg aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
-          {TOPO.filter((n) => !n.main).map((n) => (
-            <line
-              key={n.id} x1="50" y1="50" x2={n.x} y2={n.y} vectorEffect="non-scaling-stroke"
-              stroke={active === n.id ? '#1D4ED8' : '#C9D5EE'} strokeWidth={active === n.id ? 2 : 1.5}
-              strokeDasharray={active === n.id ? '0' : '4 6'}
-            />
-          ))}
+          {TOPO.filter((node) => !node.main).map((node) => {
+            const isActive = active === node.id;
+
+            return (
+              <motion.line
+                key={node.id}
+                x1="50"
+                y1="50"
+                x2={node.x}
+                y2={node.y}
+                vectorEffect="non-scaling-stroke"
+                stroke={isActive ? '#1D4ED8' : '#C9D5EE'}
+                strokeWidth={isActive ? 2.5 : 1.5}
+                strokeDasharray={isActive ? '0' : '4 6'}
+                animate={{ opacity: isActive ? 1 : 0.65 }}
+                transition={{ duration: 0.3 }}
+              />
+            );
+          })}
         </svg>
 
-        {/* Points lumineux qui circulent */}
-        {TOPO.filter((n) => !n.main).map((n) => {
-          const on = active === n.id;
+        {/* Particules */}
+        {TOPO.filter((node) => !node.main).map((node) => {
+          const isActive = active === node.id;
+
           return [0, 1].map((k) => (
             <motion.span
-              key={`${n.id}-${k}`} aria-hidden="true"
+              key={`${node.id}-${k}`}
+              aria-hidden="true"
               className="pointer-events-none absolute -ml-1 -mt-1 h-2 w-2 rounded-full bg-[#1D4ED8]"
               initial={{ left: '50%', top: '50%', opacity: 0 }}
-              animate={{ left: ['50%', `${n.x}%`], top: ['50%', `${n.y}%`], opacity: [0, 1, 1, 0] }}
-              transition={{ repeat: Infinity, duration: on ? 1.3 : 3.2, delay: k * (on ? 0.65 : 1.6), ease: 'easeInOut' }}
+              animate={{
+                left: ['50%', `${node.x}%`],
+                top: ['50%', `${node.y}%`],
+                opacity: [0, 1, 1, 0],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: isActive ? 1.3 : 3.2,
+                delay: k * (isActive ? 0.65 : 1.6),
+                ease: 'easeInOut',
+              }}
             />
           ));
         })}
 
         {/* Nœuds */}
-        {TOPO.map((n, i) => {
-          const on = active === n.id;
+        {TOPO.map((node, index) => {
+          const isActive = active === node.id;
+
           return (
-            <div key={n.id} className="absolute" style={{ left: `${n.x}%`, top: `${n.y}%`, transform: 'translate(-50%, -50%)' }}>
+            <div
+              key={node.id}
+              className="absolute"
+              style={{ left: `${node.x}%`, top: `${node.y}%`, transform: 'translate(-50%, -50%)' }}
+            >
               <motion.button
-                type="button" aria-label={`${n.t} : ${n.s}`} aria-pressed={on}
-                onPointerEnter={(e) => e.pointerType === 'mouse' && pick(n.id)}
-                onFocus={() => pick(n.id)}
-                onClick={() => (on ? goTo(n.target) : pick(n.id))}
+                type="button"
+                aria-label={`${node.t} : ${node.s}`}
+                aria-pressed={isActive}
+                onClick={() => pick(node.id)}
+                onPointerEnter={(e) => { if (e.pointerType === 'mouse') pick(node.id); }}
+                onFocus={() => pick(node.id)}
                 initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: 1, scale: on ? 1.08 : 1, y: [0, -5, 0] }}
+                animate={{ opacity: 1, scale: isActive ? 1.08 : 1, y: [0, -5, 0] }}
                 transition={{
-                  opacity: { delay: 0.3 + i * 0.12, duration: 0.5 },
+                  opacity: { delay: 0.3 + index * 0.12, duration: 0.5 },
                   scale: { type: 'spring', stiffness: 300, damping: 20 },
-                  y: { repeat: Infinity, duration: 3.4 + i * 0.5, ease: 'easeInOut', delay: i * 0.3 },
+                  y: { repeat: Infinity, duration: 3.4 + index * 0.5, ease: 'easeInOut', delay: index * 0.3 },
                 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className={`relative block w-[7.25rem] rounded-xl border px-1.5 text-center sm:w-36 ${
-                  n.main ? 'bg-[#1D4ED8] py-4 text-white' : 'bg-white py-3 text-[#0F1B2D]'
-                } ${on ? 'border-[#1D4ED8] shadow-[0_14px_34px_-14px_rgba(29,78,216,.7)]' : 'border-[#C9D5EE]'} ${FOCUS}`}
+                className={`relative block w-[7.25rem] rounded-xl border px-1.5 text-center sm:w-36 ${node.main ? 'bg-[#1D4ED8] py-4 text-white' : 'bg-white py-3 text-[#0F1B2D]'} ${isActive ? 'border-[#1D4ED8] shadow-[0_14px_34px_-14px_rgba(29,78,216,.7)]' : 'border-[#C9D5EE]'} ${FOCUS}`}
               >
-                {(on || n.main) && (
+                {(isActive || node.main) && (
                   <motion.span
-                    aria-hidden="true" className="absolute inset-0 rounded-xl border-2 border-[#1D4ED8]"
+                    aria-hidden="true"
+                    className="absolute inset-0 rounded-xl border-2 border-[#1D4ED8]"
                     animate={{ scale: [1, 1.25], opacity: [0.6, 0] }}
                     transition={{ repeat: Infinity, duration: 1.8, ease: 'easeOut' }}
                   />
                 )}
-                <span className={`${DISPLAY} relative block text-[13px] font-bold leading-tight sm:text-base`}>{n.t}</span>
-                <span className={`relative mt-0.5 block text-[10px] sm:text-xs ${n.main ? 'text-[#DCE6FF]' : 'text-[#52607A]'}`}>{n.s}</span>
+
+                <span className={`${DISPLAY} relative block text-[13px] font-bold leading-tight sm:text-base`}>
+                  {node.t}
+                </span>
+
+                <span className={`relative mt-0.5 block text-[10px] sm:text-xs ${node.main ? 'text-[#DCE6FF]' : 'text-[#52607A]'}`}>
+                  {node.s}
+                </span>
               </motion.button>
             </div>
           );
         })}
       </div>
 
-      {/* Panneau d'explication */}
-      <div className="min-h-[9.5rem] pt-5" aria-live="polite">
+      {/* Panneau d'information */}
+      <div className="relative mt-5 min-h-[190px] overflow-hidden rounded-2xl border border-[#DCE4F2] bg-white p-5 shadow-sm" aria-live="polite">
         <AnimatePresence mode="wait">
           <motion.div
             key={current.id}
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25 }}
+            initial={{ opacity: 0, y: 15, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ duration: 0.3 }}
           >
-            <p className={`${DISPLAY} text-lg font-bold text-[#0F1B2D]`}>{current.t}</p>
-            <p className="mt-1 text-[#52607A]">{current.info}</p>
-            <div className="mt-3 flex flex-wrap gap-2">{current.tags.map((t) => <Tag key={t}>{t}</Tag>)}</div>
-            <motion.button
-              type="button" onClick={() => goTo(current.target)} whileHover={{ x: 4 }}
-              className={`mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#1D4ED8] ${FOCUS}`}
-            >
-              {current.cta} <ArrowRight size={16} />
-            </motion.button>
+
+            {/* Indicateur */}
+            <div className="mb-3 flex items-center gap-2">
+              <motion.span
+                className="h-2 w-2 rounded-full bg-[#1D4ED8]"
+                animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+              />
+
+              <span className="text-xs font-medium uppercase tracking-wider text-[#1D4ED8]">
+                Domaine sélectionné
+              </span>
+            </div>
+
+            {/* Titre */}
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h3 className={`${DISPLAY} text-xl font-bold text-[#0F1B2D]`}>
+                  {current.t}
+                </h3>
+
+                <p className="mt-0.5 text-sm text-[#52607A]">
+                  {current.s}
+                </p>
+              </div>
+
+              <span className="hidden rounded-full bg-[#EEF4FF] px-3 py-1 text-xs font-semibold text-[#1D4ED8] sm:block">
+                {current.id}
+              </span>
+            </div>
+
+            {/* Description */}
+            <p className="mt-4 leading-relaxed text-[#52607A]">
+              {current.info}
+            </p>
+
+            {/* Compétences */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {current.tags.map((tag) => (
+                <motion.div
+                  key={tag}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Tag>{tag}</Tag>
+                </motion.div>
+              ))}
+            </div>
+
           </motion.div>
         </AnimatePresence>
       </div>
+
     </div>
   );
 };
-
 /* ---------- Formulaire ---------- */
 const ContactForm = ({ onDone }) => {
   const [status, setStatus] = useState(null);
