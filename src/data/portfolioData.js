@@ -229,7 +229,7 @@ export const portfolioData = {
       intitule: "Google Data Analytics Professional Certificate — En cours",
       organisme: "Google / Coursera",
       date: "Début octobre 2026",
-      document: "https://drive.google.com/file/d/1JxaEjIVSXbQFx1hE0IjI-pZ-PLto-DeM/view?usp=drive_link",
+      document: "https://coursera.org/share/431b4b994969c44ca24f15684bab7466",
     },
   ],
 
