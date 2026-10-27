@@ -128,6 +128,7 @@ const destinationName = (url) => {
     if (h.includes('play.google')) return 'Google Play Store';
     if (h.includes('apps.apple')) return 'l’App Store';
     if (h.includes('figma')) return 'Figma';
+    if (h.includes('coursera')) return 'Coursera';
     return h;
   } catch { return 'un site externe'; }
 };
