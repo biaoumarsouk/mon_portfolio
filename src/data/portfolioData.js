@@ -236,6 +236,16 @@ export const portfolioData = {
   projets: [
     {
       id: 1,
+      titre: "Sabléoun – Plateforme de valorisation des acteurs locaux",
+      description: "Conception et développement d’une plateforme web mettant en relation les créateurs, producteurs et prestataires locaux avec des clients à la recherche de produits, services et formations de qualité. Le projet vise à promouvoir le savoir-faire local à travers un espace numérique dédié à la découverte et à la valorisation des initiatives locales.",
+      tech: ["Laravel", "PHP", "MySQL", "JavaScript", "React", "Vercel", "Render"],
+      liens: [
+        { nom: "Site web", url: "https://sableoun.vercel.app", type: "web" },
+        { nom: "GitHub", url: "https://github.com/biaoumarsouk/sableoun-backend", type: "github" },
+      ],
+    },
+    {
+      id: 2,
       titre: "Système d'automatisation réseau",
       description:"Développement d’un logiciel Python avec interface graphique pour automatiser la sauvegarde, la synchronisation et la restauration des configurations d’équipements réseau.",
       tech: ["Python", "Paramiko", "Netmiko"],
@@ -245,7 +255,7 @@ export const portfolioData = {
       ],
     },
     {
-      id: 2,
+      id: 3,
       titre: "Application e-commerce Inawo",
       description:
         "Interface de vente en ligne avec gestion du panier et paiements sécurisés.",
